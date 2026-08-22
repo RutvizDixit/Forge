@@ -4,284 +4,195 @@
     Workspace — FORGE
 {% endblock %}
 
-
 {% block content %}
 
 <div class="page-header">
-
     <div>
-        <div class="eyebrow">
-            WORKSPACE
-        </div>
-
-        <h1>
-            Bring the product information together.
-        </h1>
-
+        <div class="eyebrow">WORKSPACE</div>
+        <h1>Bring the product information together.</h1>
         <p>
             Start with the files, documents or web sources that
             contain the products you need to investigate. FORGE
             will organize the information before you make a decision.
         </p>
     </div>
-
     <div class="page-header-status">
         <span class="status-dot"></span>
         Ready for input
     </div>
-
 </div>
 
-
-<!-- =============================================================
-     WORKSPACE GRID
-     ============================================================= -->
-
 <div class="workspace-layout">
-
-    <!-- =========================================================
-         MAIN INPUT PANEL
-         ========================================================= -->
 
     <section class="workspace-main">
 
         <div class="panel upload-panel">
-
             <div class="panel-header">
-
                 <div>
-                    <div class="panel-kicker">
-                        STEP 01
-                    </div>
-
-                    <h2>
-                        Add your sources
-                    </h2>
-
+                    <div class="panel-kicker">STEP 01</div>
+                    <h2>Add your sources</h2>
                     <p>
                         Upload the material that contains the
                         product information you want FORGE to work with.
                     </p>
                 </div>
-
-                <div class="panel-status">
-                    SOURCE INPUT
-                </div>
-
+                <div class="panel-status">SOURCE INPUT</div>
             </div>
-
-
-            <!-- =================================================
-                 FILE DROP AREA
-                 ================================================= -->
 
             <div
                 id="upload-dropzone"
                 class="upload-dropzone"
+                data-workspace-dropzone
+                role="button"
+                tabindex="0"
+                aria-label="Choose or drop product files"
             >
-
                 <input
                     id="file-input"
                     type="file"
                     multiple
                     hidden
+                    data-workspace-file-input
                     accept=".csv,.xlsx,.xls,.pdf,.docx,.txt,.json,.xml,.zip"
                 >
 
                 <div class="upload-visual">
-
-                    <div class="upload-icon">
-                        ↑
-                    </div>
-
+                    <div class="upload-icon">↑</div>
                 </div>
 
-                <h3>
-                    Drop product files here
-                </h3>
-
-                <p>
-                    or choose files from your computer
-                </p>
+                <h3>Drop product files here</h3>
+                <p>or choose files from your computer</p>
 
                 <button
                     id="choose-files"
                     type="button"
                     class="button button-secondary"
+                    data-choose-files
                 >
                     Choose Files
                 </button>
 
                 <div class="upload-formats">
-
-                    <span>CSV</span>
-                    <span>XLSX</span>
-                    <span>XLS</span>
-                    <span>PDF</span>
-                    <span>DOCX</span>
-                    <span>JSON</span>
-                    <span>XML</span>
-                    <span>TXT</span>
-                    <span>ZIP</span>
-
+                    <span>CSV</span><span>XLSX</span><span>XLS</span>
+                    <span>PDF</span><span>DOCX</span><span>JSON</span>
+                    <span>XML</span><span>TXT</span><span>ZIP</span>
                 </div>
 
                 <small class="upload-limit">
                     Multiple files supported · Maximum upload size
                     is configured by the workspace
                 </small>
-
             </div>
 
+            <!-- Selected files must be visible before upload. -->
+            <div class="panel selected-files-panel">
+                <div class="panel-header">
+                    <div>
+                        <div class="panel-kicker">SELECTED FILES</div>
+                        <h3>Ready to upload</h3>
+                    </div>
+                    <div class="count-badge">
+                        <span data-selected-file-count>0</span> files
+                        · <span data-selected-file-size>0 B</span>
+                    </div>
+                </div>
 
-            <!-- =================================================
-                 URL SOURCE
-                 ================================================= -->
+                <div data-selected-files class="source-list">
+                    <div class="empty-state compact">
+                        <div class="empty-state-icon">+</div>
+                        <h3>No files selected</h3>
+                        <p>Choose a file above to add it to the upload queue.</p>
+                    </div>
+                </div>
 
-            <div class="source-divider">
-                <span>OR</span>
+                <div class="requirement-footer">
+                    <span class="input-hint">
+                        Selecting a file only queues it. Use Analyze Sources to upload it to FORGE.
+                    </span>
+                    <button
+                        id="start-analysis"
+                        type="button"
+                        class="button button-primary"
+                        data-upload-files
+                    >
+                        Upload Sources
+                        <span class="button-arrow">↑</span>
+                    </button>
+                </div>
             </div>
 
+            <div class="source-divider"><span>OR</span></div>
 
             <div class="url-source-row">
-
                 <div class="url-source-copy">
-
-                    <strong>
-                        Use a web source
-                    </strong>
-
+                    <strong>Use a web source</strong>
                     <span>
                         Have a product page or technical source online?
                         Add its URL instead of downloading it first.
                     </span>
-
                 </div>
-
                 <div class="url-source-input">
-
                     <input
                         id="source-url"
                         type="url"
+                        data-source-url
                         placeholder="https://example.com/product"
                         autocomplete="off"
                     >
-
                     <button
                         id="add-url-source"
                         type="button"
                         class="button button-secondary"
+                        data-add-url
                     >
                         Add Source
                     </button>
-
                 </div>
-
             </div>
-
         </div>
 
-
-        <!-- =====================================================
-             SOURCE QUEUE
-             ===================================================== -->
-
         <div class="panel source-panel">
-
             <div class="panel-header">
-
                 <div>
-
-                    <div class="panel-kicker">
-                        INPUT QUEUE
-                    </div>
-
-                    <h2>
-                        Sources in this workspace
-                    </h2>
-
+                    <div class="panel-kicker">INPUT QUEUE</div>
+                    <h2>Sources in this workspace</h2>
                     <p>
                         These are the materials FORGE will use.
                         Nothing is treated as a confirmed product fact
                         until the available information supports it.
                     </p>
-
                 </div>
-
-                <div
-                    id="source-count"
-                    class="count-badge"
-                >
-                    0 sources
+                <div id="source-count" class="count-badge">
+                    <span data-source-count>0</span> sources
                 </div>
-
             </div>
 
-
-            <div
-                id="source-list"
-                class="source-list"
-            >
-
-                <div
-                    id="empty-source-state"
-                    class="empty-state"
-                >
-
-                    <div class="empty-state-icon">
-                        +
-                    </div>
-
-                    <h3>
-                        No sources added yet
-                    </h3>
-
+            <div id="source-list" class="source-list" data-workspace-sources>
+                <div id="empty-source-state" class="empty-state">
+                    <div class="empty-state-icon">+</div>
+                    <h3>No sources added yet</h3>
                     <p>
                         Upload a catalogue, technical document,
                         spreadsheet or source bundle to begin.
                     </p>
-
                 </div>
-
             </div>
-
         </div>
 
-
-        <!-- =====================================================
-             STRUCTURED OUTPUT
-             ===================================================== -->
-
-        <div
-            class="panel structured-output-panel"
-            id="structured-output-panel"
-        >
-
+        <div class="panel structured-output-panel" id="structured-output-panel">
             <div class="panel-header">
-
                 <div>
-                    <div class="panel-kicker">
-                        STRUCTURED OUTPUT
-                    </div>
-
-                    <h2>
-                        FORGE structured data
-                    </h2>
-
+                    <div class="panel-kicker">STRUCTURED OUTPUT</div>
+                    <h2>FORGE structured data</h2>
                     <p>
                         Preview the structured records extracted from
                         your sources, or download the same output for
                         use in downstream workflows.
                     </p>
                 </div>
-
-                <div
-                    id="structured-output-count"
-                    class="count-badge"
-                >
-                    0 records
+                <div id="structured-output-count" class="count-badge">
+                    <span data-structured-output-count>0 records</span>
                 </div>
-
             </div>
 
             <div class="structured-output-actions">
@@ -291,10 +202,7 @@
                     class="button button-secondary"
                     data-preview-structured-output
                     disabled
-                >
-                    Preview Structured Data
-                </button>
-
+                >Preview Structured Data</button>
                 <button
                     id="download-structured-output"
                     type="button"
@@ -302,357 +210,104 @@
                     data-download-structured-output
                     data-export-endpoint="{{ url_for('api.export') }}"
                     disabled
-                >
-                    Download Structured Output
-                    <span class="button-arrow">↓</span>
-                </button>
+                >Download Structured Output <span class="button-arrow">↓</span></button>
             </div>
 
             <div
                 id="structured-output-preview"
                 class="structured-output-preview"
+                data-structured-output-preview
                 hidden
                 aria-live="polite"
             ></div>
-
         </div>
 
-
-        <!-- =====================================================
-             REQUIREMENT PANEL
-             ===================================================== -->
-
         <div class="panel requirement-panel">
-
             <div class="panel-header">
-
                 <div>
-
-                    <div class="panel-kicker">
-                        STEP 02
-                    </div>
-
-                    <h2>
-                        What are you trying to find?
-                    </h2>
-
+                    <div class="panel-kicker">STEP 02</div>
+                    <h2>What are you trying to find?</h2>
                     <p>
                         Describe the actual requirement in practical
                         terms. FORGE will use it to evaluate and rank
                         the available candidates.
                     </p>
-
                 </div>
-
             </div>
-
 
             <textarea
                 id="requirement-input"
                 class="requirement-input"
+                data-requirement-input
                 rows="5"
                 placeholder="Example: Find a pressure sensor suitable for an industrial process line, with a 0–10 bar range, 24 V supply and a 4–20 mA output."
             ></textarea>
 
-
             <div class="requirement-footer">
-
                 <span class="input-hint">
                     Be specific when the requirement matters.
                     Missing information remains uncertain.
                 </span>
-
-                <button
-                    id="start-analysis"
-                    type="button"
-                    class="button button-primary"
-                    disabled
-                >
-                    Analyze Sources
-                    <span class="button-arrow">→</span>
-                </button>
-
+                <span class="input-hint">
+                    Upload sources first, then continue to matching.
+                </span>
             </div>
-
         </div>
 
     </section>
 
-
-    <!-- =========================================================
-         WORKSPACE SIDE PANEL
-         ========================================================= -->
-
     <aside class="workspace-side">
-
-        <!-- =====================================================
-             HOW THE WORKSPACE WORKS
-             ===================================================== -->
-
         <div class="panel process-panel">
-
-            <div class="panel-kicker">
-                WHAT HAPPENS NEXT
-            </div>
-
-            <h2>
-                FORGE follows the information.
-            </h2>
-
+            <div class="panel-kicker">WHAT HAPPENS NEXT</div>
+            <h2>FORGE follows the information.</h2>
             <div class="process-list">
-
-                <div class="process-step">
-
-                    <span class="process-number">
-                        01
-                    </span>
-
-                    <div>
-                        <strong>
-                            Read
-                        </strong>
-
-                        <p>
-                            Extract useful product information
-                            from the supplied sources.
-                        </p>
-                    </div>
-
-                </div>
-
-
-                <div class="process-step">
-
-                    <span class="process-number">
-                        02
-                    </span>
-
-                    <div>
-                        <strong>
-                            Organize
-                        </strong>
-
-                        <p>
-                            Normalize fields and identify product
-                            records that can be compared.
-                        </p>
-                    </div>
-
-                </div>
-
-
-                <div class="process-step">
-
-                    <span class="process-number">
-                        03
-                    </span>
-
-                    <div>
-                        <strong>
-                            Check
-                        </strong>
-
-                        <p>
-                            Test requirements against available
-                            product information.
-                        </p>
-                    </div>
-
-                </div>
-
-
-                <div class="process-step">
-
-                    <span class="process-number">
-                        04
-                    </span>
-
-                    <div>
-                        <strong>
-                            Explain
-                        </strong>
-
-                        <p>
-                            Show the reasoning, evidence and
-                            uncertainty behind the result.
-                        </p>
-                    </div>
-
-                </div>
-
+                <div class="process-step"><span class="process-number">01</span><div><strong>Read</strong><p>Extract useful product information from the supplied sources.</p></div></div>
+                <div class="process-step"><span class="process-number">02</span><div><strong>Organize</strong><p>Normalize fields and identify product records that can be compared.</p></div></div>
+                <div class="process-step"><span class="process-number">03</span><div><strong>Check</strong><p>Test requirements against available product information.</p></div></div>
+                <div class="process-step"><span class="process-number">04</span><div><strong>Explain</strong><p>Show the reasoning, evidence and uncertainty behind the result.</p></div></div>
             </div>
-
         </div>
 
-
-        <!-- =====================================================
-             SOURCE SAFETY
-             ===================================================== -->
-
         <div class="panel information-panel">
-
-            <div class="information-icon">
-                i
-            </div>
-
+            <div class="information-icon">i</div>
             <div>
-
-                <strong>
-                    Information is not the same as evidence.
-                </strong>
-
+                <strong>Information is not the same as evidence.</strong>
                 <p>
                     FORGE keeps track of where information came from.
                     If a source does not establish a requirement,
                     the result can remain uncertain instead of
                     pretending that the requirement was satisfied.
                 </p>
-
             </div>
-
         </div>
-
-
-        <!-- =====================================================
-             QUICK ACTIONS
-             ===================================================== -->
 
         <div class="panel quick-actions-panel">
-
-            <div class="panel-kicker">
-                AFTER ANALYSIS
-            </div>
-
-            <h3>
-                Continue from the result
-            </h3>
-
+            <div class="panel-kicker">AFTER ANALYSIS</div>
+            <h3>Continue from the result</h3>
             <div class="quick-action-list">
-
-                <a
-                    href="{{ url_for('pages.match_page') }}"
-                    class="quick-action"
-                >
-                    <span>
-                        Requirement Match
-                    </span>
-
-                    <span>
-                        →
-                    </span>
-                </a>
-
-                <a
-                    href="{{ url_for('pages.compare_page') }}"
-                    class="quick-action"
-                >
-                    <span>
-                        Compare Products
-                    </span>
-
-                    <span>
-                        →
-                    </span>
-                </a>
-
-                <a
-                    href="{{ url_for('pages.evidence') }}"
-                    class="quick-action"
-                >
-                    <span>
-                        Inspect Evidence
-                    </span>
-
-                    <span>
-                        →
-                    </span>
-                </a>
-
-                <a
-                    href="{{ url_for('pages.trace') }}"
-                    class="quick-action"
-                >
-                    <span>
-                        Follow the Trace
-                    </span>
-
-                    <span>
-                        →
-                    </span>
-                </a>
-
+                <a href="{{ url_for('pages.match_page') }}" class="quick-action"><span>Requirement Match</span><span>→</span></a>
+                <a href="{{ url_for('pages.compare_page') }}" class="quick-action"><span>Compare Products</span><span>→</span></a>
+                <a href="{{ url_for('pages.evidence') }}" class="quick-action"><span>Inspect Evidence</span><span>→</span></a>
+                <a href="{{ url_for('pages.trace') }}" class="quick-action"><span>Follow the Trace</span><span>→</span></a>
             </div>
-
         </div>
 
-
-        <!-- =====================================================
-             SMALL TEAM IDENTITY
-             ===================================================== -->
-
-        <div class="workspace-protection-note">
-            FORGE workspace · Team FORGE
-        </div>
-
+        <div class="workspace-protection-note">FORGE workspace · Team FORGE</div>
     </aside>
-
 </div>
 
-
-<!-- =============================================================
-     PROCESSING OVERLAY
-     ============================================================= -->
-
-<div
-    id="analysis-overlay"
-    class="processing-overlay"
-    aria-hidden="true"
->
-
+<div id="analysis-overlay" class="processing-overlay" aria-hidden="true">
     <div class="processing-card">
-
-        <div class="processing-orbit">
-
-            <span></span>
-            <span></span>
-            <span></span>
-
-        </div>
-
-        <div class="processing-kicker">
-            FORGE PROCESSING
-        </div>
-
-        <h2>
-            Following the product information.
-        </h2>
-
-        <p
-            id="processing-message"
-        >
-            Preparing the source workspace...
-        </p>
-
-        <div class="processing-progress">
-
-            <span
-                id="processing-progress-bar"
-            ></span>
-
-        </div>
-
+        <div class="processing-orbit"><span></span><span></span><span></span></div>
+        <div class="processing-kicker">FORGE PROCESSING</div>
+        <h2>Following the product information.</h2>
+        <p id="processing-message">Preparing the source workspace...</p>
+        <div class="processing-progress"><span id="processing-progress-bar"></span></div>
     </div>
-
 </div>
 
 {% endblock %}
 
-
 {% block scripts %}
-
-<script
-    src="{{ url_for('static', filename='js/workspace.js') }}"
-    defer
-></script>
-
+<script src="{{ url_for('static', filename='js/workspace.js') }}" defer></script>
 {% endblock %}
