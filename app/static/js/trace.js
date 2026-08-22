@@ -10,6 +10,18 @@ function traceText(value) { return window.escapeHTML ? escapeHTML(value ?? "") :
 async function loadTrace() {
     const sourceId = document.getElementById("trace-source-id")?.value.trim() || "";
     const recordId = document.getElementById("trace-record-id")?.value.trim() || "";
+
+    if (!sourceId && !recordId) {
+        TRACE.events = [];
+        renderTrace();
+        showToast(
+            "Enter a source ID or record ID, or run a workflow first.",
+            "warning",
+            "No trace data selected"
+        );
+        return;
+    }
+
     const params = new URLSearchParams();
     if (sourceId) params.set("source_id", sourceId);
     if (recordId) params.set("record_id", recordId);
@@ -18,6 +30,16 @@ async function loadTrace() {
         const result = await forgeFetch(`/api/trace${params.toString() ? `?${params}` : ""}`);
         TRACE.events = Array.isArray(result.events) ? result.events : [];
         renderTrace();
+
+        if (TRACE.events.length === 0) {
+            showToast(
+                "No trace events were found for the selected source or record.",
+                "warning",
+                "No trace data"
+            );
+            return;
+        }
+
         showToast("Trace loaded.", "success");
     } catch (error) {
         showToast(getErrorMessage(error), "error", "Trace unavailable");
