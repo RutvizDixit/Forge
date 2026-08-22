@@ -19,7 +19,7 @@ function catalogueProducts() {
 }
 
 function productName(product) {
-    return String(product.name || product.product_name || product.title || product.description || product.id || "Unnamed product");
+    return String(product.name || product.product_name || product.title || product.description || product.manufacturer || product.brand || product.model || product.part_number || product.id || "Unnamed product");
 }
 
 function manufacturer(product) {
@@ -121,15 +121,19 @@ function renderCatalogue() {
                             <td><div class="catalogue-specification-cell"><span class="catalogue-specification-name">${escapeCatalogue(spec.name)}</span><strong class="catalogue-specification-value">${escapeCatalogue(spec.value)}</strong></div></td>
                             <td><span class="source-reference">${escapeCatalogue(sourceName(product))}</span></td>
                             <td><span class="catalogue-status-badge status-${status}">${escapeCatalogue(status.replace("-", " ").toUpperCase())}</span></td>
-                            <td><button type="button" class="text-button catalogue-open" data-index="${index}">Inspect →</button></td>
+                            <td><button type="button" class="text-button catalogue-open" data-index="${index}" aria-label="Inspect ${escapeCatalogue(productName(product))}">Inspect →</button></td>
                         </tr>`;
                 }).join("")}
             </tbody>
         </table>`;
 
-    container.querySelectorAll(".catalogue-open").forEach(button => {
-        button.addEventListener("click", () => selectCatalogueProduct(Number(button.dataset.index)));
-    });
+    container.onclick = (event) => {
+        const button = event.target.closest(".catalogue-open");
+        if (!button || !container.contains(button)) return;
+        event.preventDefault();
+        event.stopPropagation();
+        selectCatalogueProduct(Number(button.dataset.index));
+    };
 }
 
 function updateCatalogueMetrics() {
@@ -183,6 +187,8 @@ function selectCatalogueProduct(index) {
     const ignored = new Set(["id", "name", "product_name", "title", "description", "manufacturer", "manufacturer_name", "brand", "vendor", "part_number", "part_no", "part_num", "model", "sku", "product_code", "source", "source_id", "source_name"]);
     renderDetailList("catalogue-specification-fields", Object.entries(product).filter(([key, value]) => !ignored.has(key) && value !== null && value !== undefined && String(value).trim() !== "").map(([key, value]) => [formatField(key), formatValue(value)]));
     renderDetailList("catalogue-source-fields", [["Source", sourceName(product)], ["Source ID", product.source_id || "—"]]);
+
+    panel.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function renderDetailList(id, entries) {
@@ -226,6 +232,7 @@ function initializeCatalogue() {
 }
 
 window.CATALOGUE = CATALOGUE;
+window.selectCatalogueProduct = selectCatalogueProduct;
 window.refreshCatalogue = () => { CATALOGUE.products = catalogueProducts(); applyCatalogueFilters(); updateCatalogueMetrics(); updateSourceFilter(); renderCatalogue(); };
 
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initializeCatalogue);
