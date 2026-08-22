@@ -1,0 +1,11 @@
+Flask
+pandas
+openpyxl
+xlrd
+python-dotenv
+requests
+beautifulsoup4
+pypdf
+python-docx
+reportlab
+openai

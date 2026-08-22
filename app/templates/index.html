@@ -1,0 +1,521 @@
+{% extends "base.html" %}
+
+{% block title %}
+    FORGE — Industrial Product Intelligence
+{% endblock %}
+
+
+{% block content %}
+
+<section class="hero-section">
+
+    <div class="hero-grid"></div>
+
+    <div class="hero-content">
+
+        <div class="eyebrow">
+            INDUSTRIAL PRODUCT INTELLIGENCE
+        </div>
+
+        <h1 class="hero-title">
+            From product data
+            <span class="hero-title-accent">
+                to defensible decisions.
+            </span>
+        </h1>
+
+        <p class="hero-description">
+            FORGE brings catalogues, technical documents,
+            specifications and other product sources into one
+            decision workspace — so you can find what fits,
+            understand why it fits, and trace the evidence behind it.
+        </p>
+
+
+        <div class="hero-actions">
+
+            <a
+                href="{{ url_for('pages.workspace') }}"
+                class="button button-primary button-large"
+            >
+                Open Workspace
+                <span class="button-arrow">→</span>
+            </a>
+
+            <a
+                href="{{ url_for('pages.help_page') }}"
+                class="button button-secondary button-large"
+            >
+                See How It Works
+            </a>
+
+        </div>
+
+
+        <div class="hero-note">
+
+            <span class="hero-note-dot"></span>
+
+            <span>
+                Built for technical product selection,
+                comparison and evidence-backed review.
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         HERO VISUAL
+         ========================================================= -->
+
+    <div class="hero-visual">
+
+        <div class="intelligence-orbit orbit-one"></div>
+        <div class="intelligence-orbit orbit-two"></div>
+        <div class="intelligence-orbit orbit-three"></div>
+
+        <div class="forge-core-visual">
+
+            <div class="core-ring core-ring-outer"></div>
+            <div class="core-ring core-ring-middle"></div>
+            <div class="core-ring core-ring-inner"></div>
+
+            <div class="core-center">
+                <span>F</span>
+            </div>
+
+            <div class="signal signal-one"></div>
+            <div class="signal signal-two"></div>
+            <div class="signal signal-three"></div>
+            <div class="signal signal-four"></div>
+
+        </div>
+
+        <div class="visual-label visual-label-top">
+            SOURCE
+        </div>
+
+        <div class="visual-label visual-label-right">
+            REASON
+        </div>
+
+        <div class="visual-label visual-label-bottom">
+            EVIDENCE
+        </div>
+
+        <div class="visual-label visual-label-left">
+            DECISION
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =============================================================
+     WHAT FORGE DOES
+     ============================================================= -->
+
+<section class="home-section">
+
+    <div class="section-heading">
+
+        <div class="eyebrow">
+            THE WORKFLOW
+        </div>
+
+        <h2>
+            One place to move from
+            <span>source material</span>
+            to a decision.
+        </h2>
+
+        <p>
+            FORGE is designed around the actual work involved in
+            technical product selection — not around a generic
+            chatbot conversation.
+        </p>
+
+    </div>
+
+
+    <div class="workflow-grid">
+
+        <article class="workflow-card">
+
+            <div class="workflow-number">
+                01
+            </div>
+
+            <div class="workflow-icon">
+                ↓
+            </div>
+
+            <h3>
+                Bring in the sources
+            </h3>
+
+            <p>
+                Upload catalogues, spreadsheets, PDFs, documents,
+                structured data or source bundles. Website sources
+                can also be brought into the workspace.
+            </p>
+
+        </article>
+
+
+        <article class="workflow-card">
+
+            <div class="workflow-number">
+                02
+            </div>
+
+            <div class="workflow-icon">
+                ◇
+            </div>
+
+            <h3>
+                Understand the products
+            </h3>
+
+            <p>
+                FORGE identifies product information, normalizes
+                comparable values and keeps source information
+                distinguishable from derived information.
+            </p>
+
+        </article>
+
+
+        <article class="workflow-card">
+
+            <div class="workflow-number">
+                03
+            </div>
+
+            <div class="workflow-icon">
+                ⌕
+            </div>
+
+            <h3>
+                Test what fits
+            </h3>
+
+            <p>
+                Express requirements, compare candidates and see
+                which requirements are supported, uncertain or
+                contradicted by the available information.
+            </p>
+
+        </article>
+
+
+        <article class="workflow-card">
+
+            <div class="workflow-number">
+                04
+            </div>
+
+            <div class="workflow-icon">
+                ⌁
+            </div>
+
+            <h3>
+                Follow the evidence
+            </h3>
+
+            <p>
+                Trace decisions back through their processing
+                history so a result can be reviewed instead of
+                simply being accepted as a black-box answer.
+            </p>
+
+        </article>
+
+    </div>
+
+</section>
+
+
+<!-- =============================================================
+     SOURCE TYPES
+     ============================================================= -->
+
+<section class="home-section home-section-dark">
+
+    <div class="section-heading section-heading-split">
+
+        <div>
+
+            <div class="eyebrow">
+                SOURCE FLEXIBILITY
+            </div>
+
+            <h2>
+                Your product information
+                rarely arrives in one format.
+            </h2>
+
+        </div>
+
+        <p>
+            FORGE is designed to work across the formats teams
+            actually receive — while keeping the original source
+            context available for review.
+        </p>
+
+    </div>
+
+
+    <div class="source-grid">
+
+        <div class="source-chip">
+            <span>CSV</span>
+            <small>Catalogue data</small>
+        </div>
+
+        <div class="source-chip">
+            <span>XLSX</span>
+            <small>Spreadsheets</small>
+        </div>
+
+        <div class="source-chip">
+            <span>XLS</span>
+            <small>Legacy sheets</small>
+        </div>
+
+        <div class="source-chip">
+            <span>PDF</span>
+            <small>Technical documents</small>
+        </div>
+
+        <div class="source-chip">
+            <span>DOCX</span>
+            <small>Product documents</small>
+        </div>
+
+        <div class="source-chip">
+            <span>JSON</span>
+            <small>Structured data</small>
+        </div>
+
+        <div class="source-chip">
+            <span>XML</span>
+            <small>Structured data</small>
+        </div>
+
+        <div class="source-chip">
+            <span>ZIP</span>
+            <small>Source bundles</small>
+        </div>
+
+        <div class="source-chip">
+            <span>WEB</span>
+            <small>Source pages</small>
+        </div>
+
+        <div class="source-chip">
+            <span>TXT</span>
+            <small>Plain text</small>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =============================================================
+     TRUST / REASONING
+     ============================================================= -->
+
+<section class="home-section">
+
+    <div class="trust-layout">
+
+        <div class="trust-copy">
+
+            <div class="eyebrow">
+                WHY FORGE
+            </div>
+
+            <h2>
+                A result should tell you
+                <span>why</span>.
+            </h2>
+
+            <p>
+                Product decisions often fail when the system gives
+                a confident answer without showing what information
+                supported it.
+            </p>
+
+            <p>
+                FORGE treats missing information as uncertainty,
+                keeps source evidence visible, and separates
+                deterministic checks from optional semantic reasoning.
+            </p>
+
+            <a
+                href="{{ url_for('pages.evidence') }}"
+                class="text-link"
+            >
+                Explore evidence handling
+                <span>→</span>
+            </a>
+
+        </div>
+
+
+        <div class="trust-panel">
+
+            <div class="trust-panel-header">
+
+                <span>
+                    DECISION SIGNAL
+                </span>
+
+                <span class="status-badge status-supported">
+                    TRACEABLE
+                </span>
+
+            </div>
+
+
+            <div class="trust-flow">
+
+                <div class="trust-node">
+                    <span class="trust-node-icon">
+                        S
+                    </span>
+
+                    <div>
+                        <strong>
+                            Source
+                        </strong>
+
+                        <small>
+                            Original product information
+                        </small>
+                    </div>
+                </div>
+
+
+                <div class="trust-connector"></div>
+
+
+                <div class="trust-node">
+                    <span class="trust-node-icon">
+                        N
+                    </span>
+
+                    <div>
+                        <strong>
+                            Normalize
+                        </strong>
+
+                        <small>
+                            Make comparable
+                        </small>
+                    </div>
+                </div>
+
+
+                <div class="trust-connector"></div>
+
+
+                <div class="trust-node">
+                    <span class="trust-node-icon">
+                        V
+                    </span>
+
+                    <div>
+                        <strong>
+                            Validate
+                        </strong>
+
+                        <small>
+                            Test explicit requirements
+                        </small>
+                    </div>
+                </div>
+
+
+                <div class="trust-connector"></div>
+
+
+                <div class="trust-node trust-node-final">
+                    <span class="trust-node-icon">
+                        ✓
+                    </span>
+
+                    <div>
+                        <strong>
+                            Decision
+                        </strong>
+
+                        <small>
+                            With reasoning and trace
+                        </small>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =============================================================
+     CTA
+     ============================================================= -->
+
+<section class="home-cta">
+
+    <div class="cta-grid"></div>
+
+    <div class="cta-content">
+
+        <div class="eyebrow">
+            READY TO WORK
+        </div>
+
+        <h2>
+            Bring the catalogue.
+            <br>
+            <span>Ask the real question.</span>
+        </h2>
+
+        <p>
+            Start with your product sources and let FORGE turn
+            scattered information into a structured, reviewable
+            decision workflow.
+        </p>
+
+        <a
+            href="{{ url_for('pages.workspace') }}"
+            class="button button-primary button-large"
+        >
+            Enter FORGE
+            <span class="button-arrow">→</span>
+        </a>
+
+    </div>
+
+</section>
+
+
+<!-- =============================================================
+     HOME IDENTITY MARK
+     Subtle ownership signal — intentionally not dominant.
+     ============================================================= -->
+
+<div class="home-identity-note">
+    Developed by Team FORGE
+</div>
+
+{% endblock %}

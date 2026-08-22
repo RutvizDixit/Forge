@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="application-name"
+        content="{{ forge_app_name }}"
+    >
+
+    <meta
+        name="description"
+        content="FORGE — Industrial Product Intelligence"
+    >
+
+    <meta
+        name="author"
+        content="Team FORGE"
+    >
+
+    <title>
+        {% block title %}
+            {{ forge_app_name }} — Industrial Product Intelligence
+        {% endblock %}
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/main.css') }}"
+    >
+
+    {% block head %}{% endblock %}
+</head>
+
+<body
+    data-active-page="{{ active_page|default('') }}"
+>
+
+    <!-- =========================================================
+         GLOBAL STARTUP EXPERIENCE
+         Runs once for the application shell, not per page.
+         ========================================================= -->
+
+    <div
+        id="forge-startup"
+        class="startup-screen"
+        aria-hidden="true"
+    >
+        <div class="startup-grid"></div>
+
+        <div class="startup-content">
+
+            <div class="startup-mark">
+                <span class="startup-mark-line"></span>
+                <span class="startup-mark-core"></span>
+                <span class="startup-mark-line"></span>
+            </div>
+
+            <div class="startup-name">
+                FORGE
+            </div>
+
+            <div class="startup-subtitle">
+                Industrial Product Intelligence
+            </div>
+
+            <div class="startup-progress">
+                <span id="startup-progress-bar"></span>
+            </div>
+
+            <div
+                id="startup-status"
+                class="startup-status"
+            >
+                Initializing intelligence workspace
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- =========================================================
+         APPLICATION SHELL
+         ========================================================= -->
+
+    <div
+        id="forge-app"
+        class="app-shell"
+    >
+
+        <!-- =====================================================
+             SIDEBAR
+             ===================================================== -->
+
+        <aside
+            id="forge-sidebar"
+            class="sidebar"
+        >
+
+            <div class="brand-block">
+
+                <a
+                    href="{{ url_for('pages.home') }}"
+                    class="brand"
+                    aria-label="FORGE home"
+                >
+
+                    <span class="brand-symbol">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </span>
+
+                    <span class="brand-copy">
+
+                        <span class="brand-name">
+                            FORGE
+                        </span>
+
+                        <span class="brand-tagline">
+                            Product Intelligence
+                        </span>
+
+                    </span>
+
+                </a>
+
+            </div>
+
+
+            <!-- =================================================
+                 MAIN NAVIGATION
+                 ================================================= -->
+
+            <nav
+                class="main-navigation"
+                aria-label="Main navigation"
+            >
+
+                <div class="nav-section-label">
+                    WORKSPACE
+                </div>
+
+                <a
+                    href="{{ url_for('pages.workspace') }}"
+                    class="nav-item"
+                    data-page="workspace"
+                >
+                    <span class="nav-icon">⌘</span>
+                    <span>Workspace</span>
+                </a>
+
+                <a
+                    href="{{ url_for('pages.match_page') }}"
+                    class="nav-item"
+                    data-page="match"
+                >
+                    <span class="nav-icon">⌕</span>
+                    <span>Match</span>
+                </a>
+
+                <a
+                    href="{{ url_for('pages.compare_page') }}"
+                    class="nav-item"
+                    data-page="compare"
+                >
+                    <span class="nav-icon">⇄</span>
+                    <span>Compare</span>
+                </a>
+
+                <a
+                    href="{{ url_for('pages.catalogue') }}"
+                    class="nav-item"
+                    data-page="catalogue"
+                >
+                    <span class="nav-icon">▤</span>
+                    <span>Catalogue</span>
+                </a>
+
+
+                <div class="nav-section-label">
+                    INTELLIGENCE
+                </div>
+
+                <a
+                    href="{{ url_for('pages.evidence') }}"
+                    class="nav-item"
+                    data-page="evidence"
+                >
+                    <span class="nav-icon">◈</span>
+                    <span>Evidence</span>
+                </a>
+
+                <a
+                    href="{{ url_for('pages.trace') }}"
+                    class="nav-item"
+                    data-page="trace"
+                >
+                    <span class="nav-icon">⌁</span>
+                    <span>Trace</span>
+                </a>
+
+                <a
+                    href="{{ url_for('pages.evaluation') }}"
+                    class="nav-item"
+                    data-page="evaluation"
+                >
+                    <span class="nav-icon">◉</span>
+                    <span>Evaluation</span>
+                </a>
+
+            </nav>
+
+
+            <!-- =================================================
+                 SIDEBAR FOOTER
+                 ================================================= -->
+
+            <div class="sidebar-bottom">
+
+                <a
+                    href="{{ url_for('pages.help_page') }}"
+                    class="nav-item"
+                    data-page="help"
+                >
+                    <span class="nav-icon">?</span>
+                    <span>How FORGE Works</span>
+                </a>
+
+                <a
+                    href="{{ url_for('pages.about_page') }}"
+                    class="nav-item"
+                    data-page="about"
+                >
+                    <span class="nav-icon">◉</span>
+                    <span>About Team Forge</span>
+                </a>
+
+                <div class="sidebar-divider"></div>
+
+                <div class="sidebar-meta">
+
+                    <span class="version">
+                        v{{ forge_app_version }}
+                    </span>
+
+                    <span class="protected-mark">
+                        FORGE · {{ forge_creator_year }}
+                    </span>
+
+                </div>
+
+            </div>
+
+        </aside>
+
+
+        <!-- =====================================================
+             MAIN APPLICATION AREA
+             ===================================================== -->
+
+        <main
+            id="forge-main"
+            class="main-area"
+        >
+
+            <!-- =================================================
+                 TOP BAR
+                 ================================================= -->
+
+            <header class="topbar">
+
+                <div class="topbar-left">
+
+                    <button
+                        id="sidebar-toggle"
+                        class="icon-button mobile-only"
+                        type="button"
+                        aria-label="Open navigation"
+                    >
+                        ☰
+                    </button>
+
+                    <div class="breadcrumb">
+
+                        <span class="breadcrumb-root">
+                            FORGE
+                        </span>
+
+                        <span class="breadcrumb-separator">
+                            /
+                        </span>
+
+                        <span
+                            id="breadcrumb-current"
+                            class="breadcrumb-current"
+                        >
+                            {{ active_page|default('workspace')|capitalize }}
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="topbar-right">
+
+                    <div
+                        id="system-status"
+                        class="system-status"
+                        title="FORGE system status"
+                    >
+
+                        <span class="status-dot"></span>
+
+                        <span class="status-label">
+                            SYSTEM READY
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- =================================================
+                 PAGE CONTENT
+                 ================================================= -->
+
+            <section
+                id="page-content"
+                class="page-content"
+            >
+
+                {% block content %}{% endblock %}
+
+            </section>
+
+
+            <!-- =================================================
+                 APPLICATION FOOTER
+                 ================================================= -->
+
+            <footer class="app-footer">
+
+                <span>
+                    FORGE · Industrial Product Intelligence
+                </span>
+
+                <span class="footer-separator">
+                    /
+                </span>
+
+                <span>
+                    Built for evidence-driven product decisions
+                </span>
+
+                <span class="footer-separator">
+                    /
+                </span>
+
+                <span class="footer-credit">
+                    Developed by Team FORGE
+                </span>
+
+            </footer>
+
+        </main>
+
+    </div>
+
+
+    <!-- =========================================================
+         GLOBAL NOTIFICATION SYSTEM
+         ========================================================= -->
+
+    <div
+        id="forge-toast-container"
+        class="toast-container"
+        aria-live="polite"
+        aria-atomic="true"
+    ></div>
+
+
+    <!-- =========================================================
+         GLOBAL MODAL
+         ========================================================= -->
+
+    <div
+        id="forge-modal"
+        class="modal-backdrop"
+        aria-hidden="true"
+    >
+
+        <div
+            class="modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-title"
+        >
+
+            <div class="modal-header">
+
+                <div>
+
+                    <div
+                        id="modal-eyebrow"
+                        class="modal-eyebrow"
+                    ></div>
+
+                    <h2
+                        id="modal-title"
+                        class="modal-title"
+                    ></h2>
+
+                </div>
+
+                <button
+                    id="modal-close"
+                    class="icon-button"
+                    type="button"
+                    aria-label="Close"
+                >
+                    ×
+                </button>
+
+            </div>
+
+            <div
+                id="modal-body"
+                class="modal-body"
+            ></div>
+
+            <div
+                id="modal-actions"
+                class="modal-actions"
+            ></div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         GLOBAL JAVASCRIPT
+         ========================================================= -->
+
+    <script
+        src="{{ url_for('static', filename='js/main.js') }}"
+        defer
+    ></script>
+
+    {% block scripts %}{% endblock %}
+
+</body>
+</html>

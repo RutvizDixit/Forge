@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Page Not Found — FORGE
+{% endblock %}
+
+
+{% block content %}
+
+<section class="error-page">
+
+    <div class="error-grid"></div>
+
+    <div class="error-content">
+
+        <div class="error-code">
+            404
+        </div>
+
+        <div class="eyebrow">
+            ROUTE NOT FOUND
+        </div>
+
+        <h1>
+            This path doesn't lead anywhere.
+        </h1>
+
+        <p>
+            The page you're looking for is not part of the current
+            FORGE workspace. The application itself is still here —
+            you can return to the workspace or start from the home page.
+        </p>
+
+        <div class="error-actions">
+
+            <a
+                href="{{ url_for('pages.home') }}"
+                class="button button-primary"
+            >
+                Back to FORGE
+                <span class="button-arrow">
+                    →
+                </span>
+            </a>
+
+            <a
+                href="{{ url_for('pages.workspace') }}"
+                class="button button-secondary"
+            >
+                Open Workspace
+            </a>
+
+        </div>
+
+        <div class="error-identity">
+            FORGE · Developed by Team FORGE
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

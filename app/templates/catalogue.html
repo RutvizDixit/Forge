@@ -1,0 +1,561 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Catalogue Intelligence — FORGE
+{% endblock %}
+
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+
+        <div class="eyebrow">
+            CATALOGUE INTELLIGENCE
+        </div>
+
+        <h1>
+            Turn product data into something you can work with.
+        </h1>
+
+        <p>
+            The catalogue is the source — not the decision.
+            FORGE organizes product records, exposes important
+            specifications and keeps the original information
+            available for verification.
+        </p>
+
+    </div>
+
+    <div class="page-header-status">
+        <span class="status-dot"></span>
+        Catalogue workspace
+    </div>
+
+</div>
+
+
+<!-- =============================================================
+     CATALOGUE OVERVIEW
+     ============================================================= -->
+
+<section class="catalogue-overview-grid">
+
+    <div class="metric-card">
+
+        <span class="metric-label">
+            PRODUCTS
+        </span>
+
+        <strong
+            id="catalogue-product-count"
+            class="metric-value"
+        >
+            —
+        </strong>
+
+        <span class="metric-detail">
+            product records available
+        </span>
+
+    </div>
+
+
+    <div class="metric-card">
+
+        <span class="metric-label">
+            SPECIFICATIONS
+        </span>
+
+        <strong
+            id="catalogue-field-count"
+            class="metric-value"
+        >
+            —
+        </strong>
+
+        <span class="metric-detail">
+            fields identified
+        </span>
+
+    </div>
+
+
+    <div class="metric-card">
+
+        <span class="metric-label">
+            SOURCES
+        </span>
+
+        <strong
+            id="catalogue-source-count"
+            class="metric-value"
+        >
+            —
+        </strong>
+
+        <span class="metric-detail">
+            source records contributing data
+        </span>
+
+    </div>
+
+
+    <div class="metric-card">
+
+        <span class="metric-label">
+            REVIEW
+        </span>
+
+        <strong
+            id="catalogue-review-count"
+            class="metric-value"
+        >
+            —
+        </strong>
+
+        <span class="metric-detail">
+            records needing attention
+        </span>
+
+    </div>
+
+</section>
+
+
+<!-- =============================================================
+     CATALOGUE TOOLBAR
+     ============================================================= -->
+
+<section class="panel catalogue-panel">
+
+    <div class="catalogue-toolbar">
+
+        <div class="catalogue-search">
+
+            <label
+                for="catalogue-search-input"
+                class="sr-only"
+            >
+                Search products
+            </label>
+
+            <span class="search-icon">
+                ⌕
+            </span>
+
+            <input
+                id="catalogue-search-input"
+                type="search"
+                placeholder="Search product name, manufacturer, part number or specification..."
+                autocomplete="off"
+            >
+
+        </div>
+
+
+        <div class="catalogue-filters">
+
+            <select
+                id="catalogue-source-filter"
+                class="select-control"
+            >
+                <option value="">
+                    All sources
+                </option>
+            </select>
+
+
+            <select
+                id="catalogue-status-filter"
+                class="select-control"
+            >
+                <option value="">
+                    All records
+                </option>
+
+                <option value="complete">
+                    Complete
+                </option>
+
+                <option value="review">
+                    Needs review
+                </option>
+
+                <option value="uncertain">
+                    Uncertain
+                </option>
+            </select>
+
+
+            <button
+                id="refresh-catalogue"
+                type="button"
+                class="button button-secondary"
+            >
+                Refresh
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         CATALOGUE TABLE
+         ========================================================= -->
+
+    <div
+        id="catalogue-table-container"
+        class="catalogue-table-container"
+    >
+
+        <div
+            id="catalogue-empty-state"
+            class="empty-state"
+        >
+
+            <div class="empty-state-icon">
+                ▤
+            </div>
+
+            <h3>
+                No catalogue records yet
+            </h3>
+
+            <p>
+                Bring a product catalogue or structured source
+                into the Workspace first. Once FORGE has processed
+                it, the product records will appear here.
+            </p>
+
+            <a
+                href="{{ url_for('pages.workspace') }}"
+                class="button button-secondary"
+            >
+                Add Product Sources
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =============================================================
+     PRODUCT DETAIL PANEL
+     ============================================================= -->
+
+<section
+    id="catalogue-detail-panel"
+    class="panel catalogue-detail-panel hidden"
+>
+
+    <div class="panel-header">
+
+        <div>
+
+            <div class="panel-kicker">
+                PRODUCT RECORD
+            </div>
+
+            <h2 id="catalogue-detail-name">
+                Product
+            </h2>
+
+            <p id="catalogue-detail-description">
+                Product information
+            </p>
+
+        </div>
+
+
+        <div class="result-actions">
+
+            <button
+                id="catalogue-detail-compare"
+                type="button"
+                class="button button-secondary"
+            >
+                Compare
+            </button>
+
+            <button
+                id="catalogue-detail-trace"
+                type="button"
+                class="button button-secondary"
+            >
+                View Trace
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="product-detail-grid">
+
+        <div class="product-detail-section">
+
+            <div class="result-section-label">
+                IDENTITY
+            </div>
+
+            <dl
+                id="catalogue-identity-fields"
+                class="detail-list"
+            ></dl>
+
+        </div>
+
+
+        <div class="product-detail-section">
+
+            <div class="result-section-label">
+                SPECIFICATIONS
+            </div>
+
+            <dl
+                id="catalogue-specification-fields"
+                class="detail-list"
+            ></dl>
+
+        </div>
+
+
+        <div class="product-detail-section">
+
+            <div class="result-section-label">
+                SOURCE
+            </div>
+
+            <dl
+                id="catalogue-source-fields"
+                class="detail-list"
+            ></dl>
+
+        </div>
+
+    </div>
+
+
+    <div class="catalogue-detail-warning">
+
+        <span class="information-icon">
+            i
+        </span>
+
+        <p>
+            Values shown here represent information available to
+            FORGE from the supplied sources. A blank or unavailable
+            field is not evidence that the product lacks that
+            characteristic.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- =============================================================
+     CATALOGUE TABLE TEMPLATE
+     ============================================================= -->
+
+<template id="catalogue-table-template">
+
+    <table class="catalogue-table">
+
+        <thead>
+            <tr>
+
+                <th>
+                    Product
+                </th>
+
+                <th>
+                    Manufacturer
+                </th>
+
+                <th>
+                    Part / Model
+                </th>
+
+                <th>
+                    Key specification
+                </th>
+
+                <th>
+                    Source
+                </th>
+
+                <th>
+                    Status
+                </th>
+
+                <th>
+                    Action
+                </th>
+
+            </tr>
+        </thead>
+
+        <tbody
+            id="catalogue-table-body"
+        ></tbody>
+
+    </table>
+
+</template>
+
+
+<!-- =============================================================
+     CATALOGUE ROW TEMPLATE
+     ============================================================= -->
+
+<template id="catalogue-row-template">
+
+    <tr class="catalogue-row">
+
+        <td>
+
+            <div class="catalogue-product-cell">
+
+                <strong class="catalogue-product-name"></strong>
+
+                <span class="catalogue-product-description"></span>
+
+            </div>
+
+        </td>
+
+
+        <td>
+            <span class="catalogue-manufacturer"></span>
+        </td>
+
+
+        <td>
+            <span class="catalogue-part-number"></span>
+        </td>
+
+
+        <td>
+
+            <div class="catalogue-specification-cell">
+
+                <span class="catalogue-specification-name"></span>
+
+                <strong class="catalogue-specification-value"></strong>
+
+            </div>
+
+        </td>
+
+
+        <td>
+
+            <span class="source-reference">
+            </span>
+
+        </td>
+
+
+        <td>
+
+            <span class="catalogue-status-badge">
+            </span>
+
+        </td>
+
+
+        <td>
+
+            <button
+                type="button"
+                class="text-button catalogue-view"
+            >
+                View
+                <span>→</span>
+            </button>
+
+        </td>
+
+    </tr>
+
+</template>
+
+
+<!-- =============================================================
+     CATALOGUE EXPLANATION
+     ============================================================= -->
+
+<section class="panel catalogue-explanation">
+
+    <div class="catalogue-explanation-layout">
+
+        <div>
+
+            <div class="eyebrow">
+                KEEP THE CONTEXT
+            </div>
+
+            <h2>
+                A catalogue tells you what was published.
+                FORGE helps you understand what it means for
+                your requirement.
+            </h2>
+
+        </div>
+
+
+        <div class="catalogue-explanation-copy">
+
+            <p>
+                Product catalogues are often structured around
+                manufacturers' terminology, inconsistent units
+                and incomplete fields. That makes direct selection
+                harder than simply searching for a product name.
+            </p>
+
+            <p>
+                FORGE preserves the original information while
+                creating a more useful layer for matching,
+                comparison, evidence review and decision making.
+            </p>
+
+            <a
+                href="{{ url_for('pages.match_page') }}"
+                class="text-link"
+            >
+                Use the catalogue for requirement matching
+                <span>→</span>
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =============================================================
+     CATALOGUE IDENTITY
+     ============================================================= -->
+
+<div class="catalogue-protection-note">
+    FORGE catalogue intelligence · Developed by Team FORGE
+</div>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+<script
+    src="{{ url_for('static', filename='js/catalogue.js') }}"
+    defer
+></script>
+
+{% endblock %}

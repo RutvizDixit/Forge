@@ -1,0 +1,745 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Evaluation — FORGE
+{% endblock %}
+
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+
+        <div class="eyebrow">
+            RESULT EVALUATION
+        </div>
+
+        <h1>
+            Know how much confidence the result deserves.
+        </h1>
+
+        <p>
+            Evaluation checks whether the result is complete,
+            supported and internally consistent. It does not turn
+            uncertainty into confidence just because a model produced
+            an answer.
+        </p>
+
+    </div>
+
+    <div class="page-header-status">
+        <span class="status-dot"></span>
+        Evaluation layer
+    </div>
+
+</div>
+
+
+<!-- =============================================================
+     EVALUATION INPUT
+     ============================================================= -->
+
+<section class="panel evaluation-input-panel">
+
+    <div class="panel-header">
+
+        <div>
+
+            <div class="panel-kicker">
+                RESULT TO EVALUATE
+            </div>
+
+            <h2>
+                Review a FORGE result.
+            </h2>
+
+            <p>
+                Paste or load the result you want to evaluate.
+                Evaluation can consider the requirement, source
+                information and evidence available to the result.
+            </p>
+
+        </div>
+
+        <div class="panel-status">
+            STEP 01
+        </div>
+
+    </div>
+
+
+    <div class="evaluation-input-grid">
+
+        <div class="evaluation-input-main">
+
+            <label
+                for="evaluation-result"
+                class="field-label"
+            >
+                Result
+            </label>
+
+            <textarea
+                id="evaluation-result"
+                class="requirement-input"
+                rows="8"
+                placeholder="Paste a FORGE result or decision summary here..."
+            ></textarea>
+
+        </div>
+
+
+        <div class="evaluation-input-side">
+
+            <div class="filter-field">
+
+                <label for="evaluation-requirement">
+                    Requirement
+                </label>
+
+                <textarea
+                    id="evaluation-requirement"
+                    class="text-area-small"
+                    rows="4"
+                    placeholder="What was the result supposed to satisfy?"
+                ></textarea>
+
+            </div>
+
+
+            <div class="filter-field">
+
+                <label for="evaluation-rubric">
+                    Evaluation focus
+                </label>
+
+                <select
+                    id="evaluation-rubric"
+                    class="select-control"
+                >
+                    <option value="decision">
+                        Decision readiness
+                    </option>
+
+                    <option value="evidence">
+                        Evidence coverage
+                    </option>
+
+                    <option value="requirements">
+                        Requirement coverage
+                    </option>
+
+                    <option value="consistency">
+                        Internal consistency
+                    </option>
+
+                    <option value="overall">
+                        Overall review
+                    </option>
+                </select>
+
+            </div>
+
+
+            <label class="toggle-control">
+
+                <input
+                    id="evaluation-use-llm"
+                    type="checkbox"
+                >
+
+                <span class="toggle-slider"></span>
+
+                <span class="toggle-copy">
+
+                    <strong>
+                        Use semantic review
+                    </strong>
+
+                    <small>
+                        Optional model-assisted reasoning for
+                        ambiguous or qualitative aspects.
+                    </small>
+
+                </span>
+
+            </label>
+
+        </div>
+
+    </div>
+
+
+    <div class="evaluation-input-footer">
+
+        <span class="input-hint">
+            Deterministic checks remain the foundation of the
+            evaluation.
+        </span>
+
+        <button
+            id="run-evaluation"
+            type="button"
+            class="button button-primary"
+        >
+            Evaluate Result
+            <span class="button-arrow">
+                →
+            </span>
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =============================================================
+     EVALUATION SUMMARY
+     ============================================================= -->
+
+<section class="evaluation-summary-grid">
+
+    <div class="metric-card evaluation-score-card">
+
+        <span class="metric-label">
+            DECISION READINESS
+        </span>
+
+        <strong
+            id="evaluation-score"
+            class="metric-value"
+        >
+            —
+        </strong>
+
+        <span
+            id="evaluation-score-label"
+            class="metric-detail"
+        >
+            waiting for evaluation
+        </span>
+
+    </div>
+
+
+    <div class="metric-card">
+
+        <span class="metric-label">
+            REQUIREMENTS
+        </span>
+
+        <strong
+            id="evaluation-requirement-score"
+            class="metric-value"
+        >
+            —
+        </strong>
+
+        <span class="metric-detail">
+            coverage
+        </span>
+
+    </div>
+
+
+    <div class="metric-card">
+
+        <span class="metric-label">
+            EVIDENCE
+        </span>
+
+        <strong
+            id="evaluation-evidence-score"
+            class="metric-value"
+        >
+            —
+        </strong>
+
+        <span class="metric-detail">
+            support coverage
+        </span>
+
+    </div>
+
+
+    <div class="metric-card">
+
+        <span class="metric-label">
+            ISSUES
+        </span>
+
+        <strong
+            id="evaluation-issue-count"
+            class="metric-value"
+        >
+            —
+        </strong>
+
+        <span class="metric-detail">
+            items requiring review
+        </span>
+
+    </div>
+
+</section>
+
+
+<!-- =============================================================
+     EVALUATION RESULT
+     ============================================================= -->
+
+<section class="evaluation-layout">
+
+    <div class="evaluation-main">
+
+        <!-- =====================================================
+             RESULT VERDICT
+             ===================================================== -->
+
+        <section class="panel evaluation-verdict-panel">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <div class="panel-kicker">
+                        VERDICT
+                    </div>
+
+                    <h2>
+                        Evaluation result
+                    </h2>
+
+                </div>
+
+                <span
+                    id="evaluation-verdict-badge"
+                    class="status-badge"
+                >
+                    NOT EVALUATED
+                </span>
+
+            </div>
+
+
+            <div
+                id="evaluation-verdict"
+                class="evaluation-verdict"
+            >
+
+                <div class="evaluation-verdict-empty">
+
+                    <div class="evaluation-verdict-symbol">
+                        ◉
+                    </div>
+
+                    <h3>
+                        Nothing evaluated yet
+                    </h3>
+
+                    <p>
+                        Run an evaluation to see whether the current
+                        result is ready for a decision, needs review,
+                        or lacks sufficient support.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             EVALUATION DIMENSIONS
+             ===================================================== -->
+
+        <section class="panel evaluation-dimensions-panel">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <div class="panel-kicker">
+                        EVALUATION DIMENSIONS
+                    </div>
+
+                    <h2>
+                        What the result gets right — and where it falls short.
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="evaluation-dimensions"
+                class="evaluation-dimensions"
+            >
+
+                <div class="evaluation-dimension">
+
+                    <div class="dimension-header">
+
+                        <strong>
+                            Requirement coverage
+                        </strong>
+
+                        <span
+                            id="dimension-requirements-value"
+                        >
+                            —
+                        </span>
+
+                    </div>
+
+                    <div class="dimension-bar">
+
+                        <span
+                            id="dimension-requirements-bar"
+                        ></span>
+
+                    </div>
+
+                    <p>
+                        Were the stated requirements actually
+                        addressed?
+                    </p>
+
+                </div>
+
+
+                <div class="evaluation-dimension">
+
+                    <div class="dimension-header">
+
+                        <strong>
+                            Evidence coverage
+                        </strong>
+
+                        <span
+                            id="dimension-evidence-value"
+                        >
+                            —
+                        </span>
+
+                    </div>
+
+                    <div class="dimension-bar">
+
+                        <span
+                            id="dimension-evidence-bar"
+                        ></span>
+
+                    </div>
+
+                    <p>
+                        Does the available evidence support the
+                        important conclusions?
+                    </p>
+
+                </div>
+
+
+                <div class="evaluation-dimension">
+
+                    <div class="dimension-header">
+
+                        <strong>
+                            Consistency
+                        </strong>
+
+                        <span
+                            id="dimension-consistency-value"
+                        >
+                            —
+                        </span>
+
+                    </div>
+
+                    <div class="dimension-bar">
+
+                        <span
+                            id="dimension-consistency-bar"
+                        ></span>
+
+                    </div>
+
+                    <p>
+                        Are the claims and values internally
+                        consistent?
+                    </p>
+
+                </div>
+
+
+                <div class="evaluation-dimension">
+
+                    <div class="dimension-header">
+
+                        <strong>
+                            Uncertainty handling
+                        </strong>
+
+                        <span
+                            id="dimension-uncertainty-value"
+                        >
+                            —
+                        </span>
+
+                    </div>
+
+                    <div class="dimension-bar">
+
+                        <span
+                            id="dimension-uncertainty-bar"
+                        ></span>
+
+                    </div>
+
+                    <p>
+                        Does the result distinguish missing
+                        information from actual failure?
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ISSUES
+             ===================================================== -->
+
+        <section class="panel evaluation-issues-panel">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <div class="panel-kicker">
+                        REVIEW ITEMS
+                    </div>
+
+                    <h2>
+                        What needs attention?
+                    </h2>
+
+                    <p>
+                        Issues are shown explicitly rather than being
+                        hidden inside an overall score.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="evaluation-issues"
+                class="evaluation-issues"
+            >
+
+                <div class="empty-state compact">
+
+                    <p>
+                        Evaluation issues will appear here.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+    <!-- =========================================================
+         EVALUATION SIDE PANEL
+         ========================================================= -->
+
+    <aside class="evaluation-side">
+
+        <div class="panel evaluation-principle-panel">
+
+            <div class="panel-kicker">
+                HOW TO READ THIS
+            </div>
+
+            <h2>
+                Confidence should follow evidence.
+            </h2>
+
+            <p>
+                A polished answer can still be poorly supported.
+                Evaluation therefore looks at the quality of the
+                decision path, not just how convincing the wording is.
+            </p>
+
+            <div class="principle-list">
+
+                <div class="principle-item">
+
+                    <span>
+                        ✓
+                    </span>
+
+                    <div>
+
+                        <strong>
+                            Supported
+                        </strong>
+
+                        <small>
+                            Evidence and requirements align.
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="principle-item">
+
+                    <span>
+                        ?
+                    </span>
+
+                    <div>
+
+                        <strong>
+                            Needs review
+                        </strong>
+
+                        <small>
+                            Important information remains uncertain.
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="principle-item">
+
+                    <span>
+                        !
+                    </span>
+
+                    <div>
+
+                        <strong>
+                            Weak support
+                        </strong>
+
+                        <small>
+                            The result makes a claim without enough
+                            supporting information.
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="panel evaluation-llm-panel">
+
+            <div class="panel-kicker">
+                SEMANTIC REVIEW
+            </div>
+
+            <h3>
+                Model assistance is optional.
+            </h3>
+
+            <p>
+                When enabled, semantic reasoning can help inspect
+                ambiguous language or qualitative claims. It does
+                not replace deterministic requirement checks or
+                source evidence.
+            </p>
+
+            <a
+                href="{{ url_for('pages.help_page') }}"
+                class="text-link"
+            >
+                Understand the reasoning model
+                <span>→</span>
+            </a>
+
+        </div>
+
+
+        <div class="evaluation-protection-note">
+            FORGE evaluation layer · Developed by Team FORGE
+        </div>
+
+    </aside>
+
+</section>
+
+
+<!-- =============================================================
+     EVALUATION PROCESSING
+     ============================================================= -->
+
+<div
+    id="evaluation-overlay"
+    class="processing-overlay"
+    aria-hidden="true"
+>
+
+    <div class="processing-card">
+
+        <div class="processing-orbit">
+
+            <span></span>
+            <span></span>
+            <span></span>
+
+        </div>
+
+        <div class="processing-kicker">
+            EVALUATING
+        </div>
+
+        <h2>
+            Checking the decision path.
+        </h2>
+
+        <p id="evaluation-processing-message">
+            Reviewing requirements and available evidence...
+        </p>
+
+        <div class="processing-progress">
+
+            <span
+                id="evaluation-processing-progress"
+            ></span>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+<script
+    src="{{ url_for('static', filename='js/evaluation.js') }}"
+    defer
+></script>
+
+{% endblock %}

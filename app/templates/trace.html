@@ -1,0 +1,542 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Traceability — FORGE
+{% endblock %}
+
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+
+        <div class="eyebrow">
+            TRACEABILITY
+        </div>
+
+        <h1>
+            Follow the path behind a result.
+        </h1>
+
+        <p>
+            Trace shows how FORGE moved from source information
+            through processing and validation to a decision or
+            exported result.
+        </p>
+
+    </div>
+
+    <div class="page-header-status">
+        <span class="status-dot"></span>
+        Trace ledger
+    </div>
+
+</div>
+
+
+<!-- =============================================================
+     TRACE SEARCH
+     ============================================================= -->
+
+<section class="panel trace-search-panel">
+
+    <div class="panel-header">
+
+        <div>
+
+            <div class="panel-kicker">
+                FIND A TRACE
+            </div>
+
+            <h2>
+                What do you want to follow?
+            </h2>
+
+            <p>
+                Search by source ID or record ID. Leave both empty
+                to inspect the latest trace events.
+            </p>
+
+        </div>
+
+        <div class="panel-status">
+            AUDIT PATH
+        </div>
+
+    </div>
+
+
+    <div class="trace-search-grid">
+
+        <div class="filter-field">
+
+            <label for="trace-source-id">
+                Source ID
+            </label>
+
+            <input
+                id="trace-source-id"
+                class="text-input"
+                type="text"
+                placeholder="e.g. src-..."
+                autocomplete="off"
+            >
+
+        </div>
+
+
+        <div class="filter-field">
+
+            <label for="trace-record-id">
+                Record ID
+            </label>
+
+            <input
+                id="trace-record-id"
+                class="text-input"
+                type="text"
+                placeholder="e.g. record-..."
+                autocomplete="off"
+            >
+
+        </div>
+
+
+        <div class="filter-field trace-search-action">
+
+            <button
+                id="load-trace"
+                type="button"
+                class="button button-primary"
+            >
+                Follow Trace
+                <span class="button-arrow">
+                    →
+                </span>
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =============================================================
+     TRACE SUMMARY
+     ============================================================= -->
+
+<section class="trace-summary-grid">
+
+    <div class="metric-card">
+
+        <span class="metric-label">
+            EVENTS
+        </span>
+
+        <strong
+            id="trace-event-count"
+            class="metric-value"
+        >
+            —
+        </strong>
+
+        <span class="metric-detail">
+            recorded events
+        </span>
+
+    </div>
+
+
+    <div class="metric-card">
+
+        <span class="metric-label">
+            STAGES
+        </span>
+
+        <strong
+            id="trace-stage-count"
+            class="metric-value"
+        >
+            —
+        </strong>
+
+        <span class="metric-detail">
+            processing stages
+        </span>
+
+    </div>
+
+
+    <div class="metric-card">
+
+        <span class="metric-label">
+            INTEGRITY
+        </span>
+
+        <strong
+            id="trace-integrity-status"
+            class="metric-value"
+        >
+            —
+        </strong>
+
+        <span class="metric-detail">
+            ledger verification
+        </span>
+
+    </div>
+
+
+    <div class="metric-card">
+
+        <span class="metric-label">
+            STATUS
+        </span>
+
+        <strong
+            id="trace-status"
+            class="metric-value"
+        >
+            —
+        </strong>
+
+        <span class="metric-detail">
+            current trace state
+        </span>
+
+    </div>
+
+</section>
+
+
+<!-- =============================================================
+     TRACE PATH
+     ============================================================= -->
+
+<section class="panel trace-path-panel">
+
+    <div class="panel-header">
+
+        <div>
+
+            <div class="panel-kicker">
+                DECISION PATH
+            </div>
+
+            <h2>
+                Where the information went.
+            </h2>
+
+            <p>
+                Each node represents a meaningful processing event.
+                Select a node to inspect what happened at that stage.
+            </p>
+
+        </div>
+
+        <button
+            id="verify-trace"
+            type="button"
+            class="button button-secondary"
+        >
+            Verify Integrity
+        </button>
+
+    </div>
+
+
+    <div
+        id="trace-path"
+        class="trace-path"
+    >
+
+        <div
+            id="trace-empty-state"
+            class="empty-state"
+        >
+
+            <div class="empty-state-icon">
+                ⌁
+            </div>
+
+            <h3>
+                No trace selected
+            </h3>
+
+            <p>
+                Enter a source or record ID above to follow its
+                processing history.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =============================================================
+     TRACE EVENT DETAIL
+     ============================================================= -->
+
+<section class="panel trace-detail-panel">
+
+    <div class="panel-header">
+
+        <div>
+
+            <div class="panel-kicker">
+                EVENT DETAIL
+            </div>
+
+            <h2>
+                Select a trace event
+            </h2>
+
+        </div>
+
+    </div>
+
+
+    <div
+        id="trace-event-detail"
+        class="trace-event-detail"
+    >
+
+        <div class="trace-detail-empty">
+
+            <div class="trace-detail-symbol">
+                ⌁
+            </div>
+
+            <p>
+                Select an event from the trace path to inspect its
+                timestamp, stage, source, record and recorded data.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =============================================================
+     TRACE EVENT TEMPLATE
+     ============================================================= -->
+
+<template id="trace-event-template">
+
+    <button
+        type="button"
+        class="trace-node"
+    >
+
+        <span class="trace-node-line"></span>
+
+        <span class="trace-node-marker">
+            <span class="trace-node-marker-inner"></span>
+        </span>
+
+        <span class="trace-node-content">
+
+            <span class="trace-node-stage">
+            </span>
+
+            <strong class="trace-node-title">
+            </strong>
+
+            <span class="trace-node-time">
+            </span>
+
+        </span>
+
+    </button>
+
+</template>
+
+
+<!-- =============================================================
+     TRACE DETAIL TEMPLATE
+     ============================================================= -->
+
+<template id="trace-detail-template">
+
+    <div class="trace-detail-inner">
+
+        <div class="trace-detail-header">
+
+            <div>
+
+                <div class="panel-kicker">
+                    TRACE EVENT
+                </div>
+
+                <h3 class="trace-detail-title">
+                </h3>
+
+            </div>
+
+            <span class="trace-event-type">
+            </span>
+
+        </div>
+
+
+        <div class="trace-detail-meta">
+
+            <div class="trace-meta-item">
+
+                <span>
+                    Event ID
+                </span>
+
+                <strong class="trace-detail-event-id">
+                </strong>
+
+            </div>
+
+
+            <div class="trace-meta-item">
+
+                <span>
+                    Timestamp
+                </span>
+
+                <strong class="trace-detail-timestamp">
+                </strong>
+
+            </div>
+
+
+            <div class="trace-meta-item">
+
+                <span>
+                    Source
+                </span>
+
+                <strong class="trace-detail-source">
+                </strong>
+
+            </div>
+
+
+            <div class="trace-meta-item">
+
+                <span>
+                    Record
+                </span>
+
+                <strong class="trace-detail-record">
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="trace-detail-section">
+
+            <div class="result-section-label">
+                RECORDED DATA
+            </div>
+
+            <pre
+                class="trace-data"
+            ></pre>
+
+        </div>
+
+
+        <div class="trace-detail-section">
+
+            <div class="result-section-label">
+                INTEGRITY
+            </div>
+
+            <div class="trace-integrity-box">
+
+                <span class="trace-integrity-icon">
+                    #
+                </span>
+
+                <div>
+
+                    <strong>
+                        Event hash
+                    </strong>
+
+                    <code class="trace-event-hash">
+                    </code>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</template>
+
+
+<!-- =============================================================
+     TRACE EXPLANATION
+     ============================================================= -->
+
+<section class="panel trace-explanation-panel">
+
+    <div class="trace-explanation-layout">
+
+        <div>
+
+            <div class="eyebrow">
+                WHY TRACE EXISTS
+            </div>
+
+            <h2>
+                A decision should have a path back to its source.
+            </h2>
+
+        </div>
+
+
+        <div>
+
+            <p>
+                Traceability makes it possible to inspect how a
+                result was produced instead of treating the final
+                answer as an isolated output.
+            </p>
+
+            <p>
+                FORGE records meaningful processing events and links
+                related events together. This gives reviewers a
+                practical path from a decision back toward the
+                information that produced it.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<div class="trace-protection-note">
+    FORGE trace ledger · Developed by Team FORGE
+</div>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+<script
+    src="{{ url_for('static', filename='js/trace.js') }}"
+    defer
+></script>
+
+{% endblock %}

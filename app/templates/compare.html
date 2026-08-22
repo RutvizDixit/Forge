@@ -1,0 +1,512 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Compare Products — FORGE
+{% endblock %}
+
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+
+        <div class="eyebrow">
+            PRODUCT COMPARISON
+        </div>
+
+        <h1>
+            Put the candidates side by side.
+        </h1>
+
+        <p>
+            Compare the specifications that matter without hiding
+            the gaps in the source data. FORGE distinguishes a real
+            difference from information that simply isn't available.
+        </p>
+
+    </div>
+
+    <div class="page-header-status">
+        <span class="status-dot"></span>
+        Comparison ready
+    </div>
+
+</div>
+
+
+<!-- =============================================================
+     COMPARISON CONTROLS
+     ============================================================= -->
+
+<section class="panel comparison-controls">
+
+    <div class="panel-header">
+
+        <div>
+
+            <div class="panel-kicker">
+                STEP 01
+            </div>
+
+            <h2>
+                Choose what to compare
+            </h2>
+
+            <p>
+                Add products from your workspace or paste product
+                records directly for a focused comparison.
+            </p>
+
+        </div>
+
+        <div class="panel-status">
+            SIDE BY SIDE
+        </div>
+
+    </div>
+
+
+    <div class="comparison-input-area">
+
+        <div
+            id="comparison-product-list"
+            class="comparison-product-list"
+        >
+
+            <div
+                id="comparison-empty"
+                class="empty-state compact"
+            >
+
+                <div class="empty-state-icon">
+                    ⇄
+                </div>
+
+                <h3>
+                    No products selected
+                </h3>
+
+                <p>
+                    Select candidates from Match or add them from
+                    the workspace.
+                </p>
+
+                <a
+                    href="{{ url_for('pages.match_page') }}"
+                    class="button button-secondary"
+                >
+                    Go to Match
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <div class="comparison-control-footer">
+
+            <div class="input-hint">
+                Compare two or more candidates to expose the
+                specifications that separate them.
+            </div>
+
+            <button
+                id="run-comparison"
+                type="button"
+                class="button button-primary"
+                disabled
+            >
+                Compare Products
+                <span class="button-arrow">
+                    →
+                </span>
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =============================================================
+     COMPARISON SUMMARY
+     ============================================================= -->
+
+<section
+    id="comparison-summary"
+    class="comparison-summary-grid"
+>
+
+    <div class="metric-card">
+
+        <span class="metric-label">
+            PRODUCTS
+        </span>
+
+        <strong
+            id="comparison-product-count"
+            class="metric-value"
+        >
+            —
+        </strong>
+
+        <span class="metric-detail">
+            candidates compared
+        </span>
+
+    </div>
+
+
+    <div class="metric-card">
+
+        <span class="metric-label">
+            DIFFERENCES
+        </span>
+
+        <strong
+            id="comparison-difference-count"
+            class="metric-value"
+        >
+            —
+        </strong>
+
+        <span class="metric-detail">
+            fields with different values
+        </span>
+
+    </div>
+
+
+    <div class="metric-card">
+
+        <span class="metric-label">
+            SHARED
+        </span>
+
+        <strong
+            id="comparison-shared-count"
+            class="metric-value"
+        >
+            —
+        </strong>
+
+        <span class="metric-detail">
+            fields shared by candidates
+        </span>
+
+    </div>
+
+
+    <div class="metric-card">
+
+        <span class="metric-label">
+            REVIEW
+        </span>
+
+        <strong
+            id="comparison-review-count"
+            class="metric-value"
+        >
+            —
+        </strong>
+
+        <span class="metric-detail">
+            unavailable or incomplete fields
+        </span>
+
+    </div>
+
+</section>
+
+
+<!-- =============================================================
+     COMPARISON TABLE
+     ============================================================= -->
+
+<section class="panel comparison-table-panel">
+
+    <div class="panel-header">
+
+        <div>
+
+            <div class="panel-kicker">
+                COMPARISON MATRIX
+            </div>
+
+            <h2>
+                Specification differences
+            </h2>
+
+            <p>
+                Differences are highlighted for attention.
+                “Not available” means the supplied information did
+                not establish a value — it does not mean the product
+                lacks that feature.
+            </p>
+
+        </div>
+
+
+        <div class="result-actions">
+
+            <button
+                id="export-comparison"
+                type="button"
+                class="button button-secondary"
+                disabled
+            >
+                Export
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div
+        id="comparison-table-container"
+        class="comparison-table-container"
+    >
+
+        <div
+            id="comparison-table-empty"
+            class="empty-state"
+        >
+
+            <div class="empty-state-icon">
+                ⇄
+            </div>
+
+            <h3>
+                Comparison will appear here
+            </h3>
+
+            <p>
+                Select products and run the comparison to see
+                their specifications side by side.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =============================================================
+     DIFFERENCE DETAILS
+     ============================================================= -->
+
+<section
+    id="comparison-differences-panel"
+    class="panel differences-panel"
+>
+
+    <div class="panel-header">
+
+        <div>
+
+            <div class="panel-kicker">
+                WHAT CHANGED
+            </div>
+
+            <h2>
+                Meaningful differences
+            </h2>
+
+            <p>
+                These fields contain values that differ between
+                the available candidates.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div
+        id="difference-list"
+        class="difference-list"
+    >
+
+        <div class="empty-state compact">
+
+            <p>
+                Run a comparison to identify differences.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =============================================================
+     SHARED INFORMATION
+     ============================================================= -->
+
+<section class="panel shared-information-panel">
+
+    <div class="panel-header">
+
+        <div>
+
+            <div class="panel-kicker">
+                WHAT STAYS THE SAME
+            </div>
+
+            <h2>
+                Shared specifications
+            </h2>
+
+            <p>
+                Values that are available and consistent across
+                the selected candidates.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div
+        id="shared-list"
+        class="shared-list"
+    >
+
+        <div class="empty-state compact">
+
+            <p>
+                Shared specifications will appear after comparison.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =============================================================
+     TABLE TEMPLATE
+     ============================================================= -->
+
+<template id="comparison-table-template">
+
+    <table class="comparison-table">
+
+        <thead>
+            <tr id="comparison-table-head"></tr>
+        </thead>
+
+        <tbody id="comparison-table-body"></tbody>
+
+    </table>
+
+</template>
+
+
+<!-- =============================================================
+     COMPARISON ROW TEMPLATE
+     ============================================================= -->
+
+<template id="comparison-row-template">
+
+    <tr class="comparison-row">
+
+        <th class="comparison-field"></th>
+
+    </tr>
+
+</template>
+
+
+<!-- =============================================================
+     PRODUCT SELECTION CARD TEMPLATE
+     ============================================================= -->
+
+<template id="comparison-product-template">
+
+    <div class="comparison-product-card">
+
+        <div class="comparison-product-index"></div>
+
+        <div class="comparison-product-info">
+
+            <strong class="comparison-product-name"></strong>
+
+            <span class="comparison-product-description"></span>
+
+        </div>
+
+        <button
+            type="button"
+            class="icon-button comparison-remove"
+            aria-label="Remove product"
+        >
+            ×
+        </button>
+
+    </div>
+
+</template>
+
+
+<!-- =============================================================
+     COMPARISON PROCESSING OVERLAY
+     ============================================================= -->
+
+<div
+    id="comparison-overlay"
+    class="processing-overlay"
+    aria-hidden="true"
+>
+
+    <div class="processing-card">
+
+        <div class="processing-orbit">
+
+            <span></span>
+            <span></span>
+            <span></span>
+
+        </div>
+
+        <div class="processing-kicker">
+            COMPARING
+        </div>
+
+        <h2>
+            Finding what separates the candidates.
+        </h2>
+
+        <p id="comparison-processing-message">
+            Organizing the available specifications...
+        </p>
+
+        <div class="processing-progress">
+
+            <span
+                id="comparison-processing-progress"
+            ></span>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+<script
+    src="{{ url_for('static', filename='js/comparison.js') }}"
+    defer
+></script>
+
+{% endblock %}

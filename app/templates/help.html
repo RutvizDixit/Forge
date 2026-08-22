@@ -1,0 +1,1124 @@
+{% extends "base.html" %}
+
+{% block title %}
+    How FORGE Works — FORGE
+{% endblock %}
+
+
+{% block content %}
+
+<div class="page-header help-page-header">
+
+    <div>
+
+        <div class="eyebrow">
+            HOW FORGE WORKS
+        </div>
+
+        <h1>
+            Not just an answer.
+            <span>Show me why.</span>
+        </h1>
+
+        <p>
+            FORGE is a product-intelligence workspace for turning
+            scattered technical product information into decisions
+            that can be reviewed, compared and traced back to their
+            sources.
+        </p>
+
+    </div>
+
+    <div class="page-header-status">
+        <span class="status-dot"></span>
+        Guided explanation
+    </div>
+
+</div>
+
+
+<!-- =============================================================
+     01 — THE BASIC IDEA
+     ============================================================= -->
+
+<section class="help-section">
+
+    <div class="help-section-number">
+        01
+    </div>
+
+    <div class="help-section-content">
+
+        <div class="eyebrow">
+            THE BASIC IDEA
+        </div>
+
+        <h2>
+            FORGE sits between product information and the decision.
+        </h2>
+
+        <p>
+            Suppose someone gives you a product catalogue containing
+            hundreds of components and asks:
+        </p>
+
+        <blockquote class="help-quote">
+            “Which product should I use for this requirement?”
+        </blockquote>
+
+        <p>
+            Searching the catalogue is only the beginning. You still
+            need to understand the specifications, compare units,
+            check whether the product actually satisfies the
+            requirement and determine whether the information is
+            reliable enough to support the decision.
+        </p>
+
+        <p>
+            That is the problem FORGE is designed around.
+        </p>
+
+
+        <div class="help-flow">
+
+            <div class="help-flow-node">
+                <span>01</span>
+                <strong>Sources</strong>
+                <small>Files, documents, web pages</small>
+            </div>
+
+            <div class="help-flow-arrow">
+                →
+            </div>
+
+            <div class="help-flow-node">
+                <span>02</span>
+                <strong>Understand</strong>
+                <small>Extract and organize information</small>
+            </div>
+
+            <div class="help-flow-arrow">
+                →
+            </div>
+
+            <div class="help-flow-node">
+                <span>03</span>
+                <strong>Check</strong>
+                <small>Test the actual requirement</small>
+            </div>
+
+            <div class="help-flow-arrow">
+                →
+            </div>
+
+            <div class="help-flow-node">
+                <span>04</span>
+                <strong>Decide</strong>
+                <small>Compare, review and trace</small>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =============================================================
+     02 — WHAT CAN I GIVE FORGE?
+     ============================================================= -->
+
+<section class="help-section help-section-alt">
+
+    <div class="help-section-number">
+        02
+    </div>
+
+    <div class="help-section-content">
+
+        <div class="eyebrow">
+            INPUTS
+        </div>
+
+        <h2>
+            Give FORGE the information you already have.
+        </h2>
+
+        <p>
+            Product information rarely arrives in one perfectly
+            structured database. It may be spread across a catalogue,
+            a technical PDF, a manufacturer's document and a web page.
+        </p>
+
+        <div class="help-format-grid">
+
+            <div class="help-format-card">
+                <strong>CSV</strong>
+                <span>Tabular catalogue data</span>
+            </div>
+
+            <div class="help-format-card">
+                <strong>XLSX</strong>
+                <span>Modern spreadsheets</span>
+            </div>
+
+            <div class="help-format-card">
+                <strong>XLS</strong>
+                <span>Legacy spreadsheets</span>
+            </div>
+
+            <div class="help-format-card">
+                <strong>PDF</strong>
+                <span>Technical documents and datasheets</span>
+            </div>
+
+            <div class="help-format-card">
+                <strong>DOCX</strong>
+                <span>Product documents</span>
+            </div>
+
+            <div class="help-format-card">
+                <strong>TXT</strong>
+                <span>Plain-text information</span>
+            </div>
+
+            <div class="help-format-card">
+                <strong>JSON</strong>
+                <span>Structured product data</span>
+            </div>
+
+            <div class="help-format-card">
+                <strong>XML</strong>
+                <span>Structured technical data</span>
+            </div>
+
+            <div class="help-format-card">
+                <strong>ZIP</strong>
+                <span>Collections of source material</span>
+            </div>
+
+            <div class="help-format-card">
+                <strong>WEB</strong>
+                <span>Relevant source pages</span>
+            </div>
+
+        </div>
+
+        <div class="help-callout">
+
+            <span class="information-icon">
+                i
+            </span>
+
+            <div>
+
+                <strong>
+                    The source stays important.
+                </strong>
+
+                <p>
+                    FORGE does not treat uploaded information as
+                    anonymous text. Source identity and provenance
+                    are preserved so a result can be investigated
+                    later.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =============================================================
+     03 — WHAT HAPPENS AFTER UPLOAD?
+     ============================================================= -->
+
+<section class="help-section">
+
+    <div class="help-section-number">
+        03
+    </div>
+
+    <div class="help-section-content">
+
+        <div class="eyebrow">
+            PROCESSING
+        </div>
+
+        <h2>
+            Uploading a file is only the first step.
+        </h2>
+
+        <div class="help-process-list">
+
+            <article class="help-process-item">
+
+                <div class="help-process-icon">
+                    1
+                </div>
+
+                <div>
+
+                    <h3>
+                        Read the source
+                    </h3>
+
+                    <p>
+                        FORGE identifies useful content inside the
+                        supplied file or source. Depending on the
+                        format, that may include rows, fields,
+                        paragraphs, tables or structured records.
+                    </p>
+
+                </div>
+
+            </article>
+
+
+            <article class="help-process-item">
+
+                <div class="help-process-icon">
+                    2
+                </div>
+
+                <div>
+
+                    <h3>
+                        Identify product information
+                    </h3>
+
+                    <p>
+                        Product names, manufacturers, part numbers,
+                        specifications and related fields are organized
+                        into records that can be worked with.
+                    </p>
+
+                </div>
+
+            </article>
+
+
+            <article class="help-process-item">
+
+                <div class="help-process-icon">
+                    3
+                </div>
+
+                <div>
+
+                    <h3>
+                        Normalize comparable values
+                    </h3>
+
+                    <p>
+                        The same physical or technical quantity may
+                        appear using different units or notation.
+                        FORGE creates comparable representations while
+                        keeping the original value available.
+                    </p>
+
+                </div>
+
+            </article>
+
+
+            <article class="help-process-item">
+
+                <div class="help-process-icon">
+                    4
+                </div>
+
+                <div>
+
+                    <h3>
+                        Preserve provenance
+                    </h3>
+
+                    <p>
+                        Information remains associated with its source
+                        so that a later result can be traced back to
+                        where the information originated.
+                    </p>
+
+                </div>
+
+            </article>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =============================================================
+     04 — WHAT DOES MATCH MEAN?
+     ============================================================= -->
+
+<section class="help-section help-section-alt">
+
+    <div class="help-section-number">
+        04
+    </div>
+
+    <div class="help-section-content">
+
+        <div class="eyebrow">
+            REQUIREMENT MATCHING
+        </div>
+
+        <h2>
+            “Match” does not mean “the product sounds relevant.”
+        </h2>
+
+        <p>
+            When you enter a requirement, FORGE evaluates the
+            available product information against that requirement.
+        </p>
+
+        <div class="help-status-grid">
+
+            <div class="help-status-card supported">
+
+                <div class="help-status-icon">
+                    ✓
+                </div>
+
+                <h3>
+                    Supported
+                </h3>
+
+                <p>
+                    The available information provides support for
+                    the requirement.
+                </p>
+
+            </div>
+
+
+            <div class="help-status-card uncertain">
+
+                <div class="help-status-icon">
+                    ?
+                </div>
+
+                <h3>
+                    Needs review
+                </h3>
+
+                <p>
+                    The source does not provide enough information
+                    to confidently conclude that the requirement
+                    is satisfied.
+                </p>
+
+            </div>
+
+
+            <div class="help-status-card unsupported">
+
+                <div class="help-status-icon">
+                    ×
+                </div>
+
+                <h3>
+                    Not supported
+                </h3>
+
+                <p>
+                    Available information conflicts with the
+                    requirement.
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="help-callout warning">
+
+            <span class="information-icon">
+                !
+            </span>
+
+            <div>
+
+                <strong>
+                    Missing information is not a failure.
+                </strong>
+
+                <p>
+                    If a product datasheet does not mention a
+                    specification, FORGE should not automatically
+                    claim that the product lacks it. The correct
+                    state may be uncertainty or a request for review.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =============================================================
+     05 — WHAT IS EVIDENCE?
+     ============================================================= -->
+
+<section class="help-section">
+
+    <div class="help-section-number">
+        05
+    </div>
+
+    <div class="help-section-content">
+
+        <div class="eyebrow">
+            EVIDENCE
+        </div>
+
+        <h2>
+            Every important conclusion should have something behind it.
+        </h2>
+
+        <p>
+            Evidence is the information that supports a conclusion.
+            It can be an extracted value from a catalogue row, a
+            specification in a technical document or another
+            identifiable piece of source information.
+        </p>
+
+        <div class="help-evidence-example">
+
+            <div class="help-evidence-source">
+
+                <span class="help-evidence-label">
+                    SOURCE
+                </span>
+
+                <strong>
+                    Manufacturer datasheet
+                </strong>
+
+                <small>
+                    Page 4 · Specification table
+                </small>
+
+            </div>
+
+
+            <div class="help-evidence-arrow">
+                →
+            </div>
+
+
+            <div class="help-evidence-value">
+
+                <span class="help-evidence-label">
+                    INFORMATION
+                </span>
+
+                <strong>
+                    Pressure range: 0–10 bar
+                </strong>
+
+                <small>
+                    Extracted product specification
+                </small>
+
+            </div>
+
+
+            <div class="help-evidence-arrow">
+                →
+            </div>
+
+
+            <div class="help-evidence-decision">
+
+                <span class="help-evidence-label">
+                    DECISION
+                </span>
+
+                <strong>
+                    Requirement supported
+                </strong>
+
+                <small>
+                    Requirement: 0–10 bar
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =============================================================
+     06 — WHAT IS TRACE?
+     ============================================================= -->
+
+<section class="help-section help-section-alt">
+
+    <div class="help-section-number">
+        06
+    </div>
+
+    <div class="help-section-content">
+
+        <div class="eyebrow">
+            TRACEABILITY
+        </div>
+
+        <h2>
+            Trace lets you walk backward through the decision.
+        </h2>
+
+        <p>
+            A final answer is often the least useful place to stop
+            investigating. Trace provides a path through the
+            processing events that produced the result.
+        </p>
+
+        <div class="help-trace-visual">
+
+            <div class="help-trace-node">
+
+                <span>
+                    01
+                </span>
+
+                <strong>
+                    Source
+                </strong>
+
+                <small>
+                    Original material
+                </small>
+
+            </div>
+
+            <div class="help-trace-line"></div>
+
+            <div class="help-trace-node">
+
+                <span>
+                    02
+                </span>
+
+                <strong>
+                    Extract
+                </strong>
+
+                <small>
+                    Information found
+                </small>
+
+            </div>
+
+            <div class="help-trace-line"></div>
+
+            <div class="help-trace-node">
+
+                <span>
+                    03
+                </span>
+
+                <strong>
+                    Normalize
+                </strong>
+
+                <small>
+                    Comparable value
+                </small>
+
+            </div>
+
+            <div class="help-trace-line"></div>
+
+            <div class="help-trace-node">
+
+                <span>
+                    04
+                </span>
+
+                <strong>
+                    Validate
+                </strong>
+
+                <small>
+                    Requirement check
+                </small>
+
+            </div>
+
+            <div class="help-trace-line"></div>
+
+            <div class="help-trace-node">
+
+                <span>
+                    05
+                </span>
+
+                <strong>
+                    Decision
+                </strong>
+
+                <small>
+                    Result
+                </small>
+
+            </div>
+
+        </div>
+
+        <a
+            href="{{ url_for('pages.trace') }}"
+            class="text-link"
+        >
+            Open the trace ledger
+            <span>→</span>
+        </a>
+
+    </div>
+
+</section>
+
+
+<!-- =============================================================
+     07 — WHERE DOES AI FIT?
+     ============================================================= -->
+
+<section class="help-section">
+
+    <div class="help-section-number">
+        07
+    </div>
+
+    <div class="help-section-content">
+
+        <div class="eyebrow">
+            OPTIONAL SEMANTIC REASONING
+        </div>
+
+        <h2>
+            AI can help interpret information.
+            It should not invent evidence.
+        </h2>
+
+        <p>
+            Some product requirements are easy to check
+            deterministically. Others involve language, terminology
+            or context where semantic reasoning can be useful.
+        </p>
+
+        <p>
+            FORGE can use an optional language-model layer for those
+            cases. The model can help interpret ambiguous text,
+            summarize information or assist with qualitative
+            reasoning.
+        </p>
+
+        <div class="help-ai-boundary">
+
+            <div class="help-ai-column">
+
+                <div class="help-ai-heading allowed">
+                    USEFUL FOR
+                </div>
+
+                <ul>
+                    <li>
+                        Interpreting technical language
+                    </li>
+
+                    <li>
+                        Understanding similar terminology
+                    </li>
+
+                    <li>
+                        Summarizing source material
+                    </li>
+
+                    <li>
+                        Assisting qualitative comparison
+                    </li>
+                </ul>
+
+            </div>
+
+
+            <div class="help-ai-divider"></div>
+
+
+            <div class="help-ai-column">
+
+                <div class="help-ai-heading restricted">
+                    NOT A SUBSTITUTE FOR
+                </div>
+
+                <ul>
+                    <li>
+                        Missing source evidence
+                    </li>
+
+                    <li>
+                        Explicit requirement checks
+                    </li>
+
+                    <li>
+                        Actual product specifications
+                    </li>
+
+                    <li>
+                        Human review where information remains uncertain
+                    </li>
+                </ul>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =============================================================
+     08 — A COMPLETE EXAMPLE
+     ============================================================= -->
+
+<section class="help-section help-section-alt">
+
+    <div class="help-section-number">
+        08
+    </div>
+
+    <div class="help-section-content">
+
+        <div class="eyebrow">
+            EXAMPLE WORKFLOW
+        </div>
+
+        <h2>
+            From a catalogue to a defensible product choice.
+        </h2>
+
+        <div class="help-example">
+
+            <div class="help-example-step">
+
+                <span>
+                    01
+                </span>
+
+                <div>
+
+                    <strong>
+                        You receive a catalogue
+                    </strong>
+
+                    <p>
+                        It contains 300 pressure sensors across
+                        several manufacturers.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="help-example-step">
+
+                <span>
+                    02
+                </span>
+
+                <div>
+
+                    <strong>
+                        You add the catalogue to FORGE
+                    </strong>
+
+                    <p>
+                        FORGE reads the product records and organizes
+                        the available specifications.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="help-example-step">
+
+                <span>
+                    03
+                </span>
+
+                <div>
+
+                    <strong>
+                        You state the requirement
+                    </strong>
+
+                    <p>
+                        “0–10 bar, 24 V supply, 4–20 mA output.”
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="help-example-step">
+
+                <span>
+                    04
+                </span>
+
+                <div>
+
+                    <strong>
+                        FORGE evaluates the candidates
+                    </strong>
+
+                    <p>
+                        Products are separated into supported,
+                        uncertain and unsupported requirements.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="help-example-step">
+
+                <span>
+                    05
+                </span>
+
+                <div>
+
+                    <strong>
+                        You compare the strongest candidates
+                    </strong>
+
+                    <p>
+                        Their specifications and meaningful
+                        differences are shown side by side.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="help-example-step">
+
+                <span>
+                    06
+                </span>
+
+                <div>
+
+                    <strong>
+                        You inspect the evidence
+                    </strong>
+
+                    <p>
+                        The important values can be traced back
+                        to their source information.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="help-example-step">
+
+                <span>
+                    07
+                </span>
+
+                <div>
+
+                    <strong>
+                        You make the decision
+                    </strong>
+
+                    <p>
+                        The result is supported by an inspectable
+                        information path rather than a black-box claim.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =============================================================
+     09 — WHAT FORGE DOES NOT CLAIM
+     ============================================================= -->
+
+<section class="help-section">
+
+    <div class="help-section-number">
+        09
+    </div>
+
+    <div class="help-section-content">
+
+        <div class="eyebrow">
+            IMPORTANT LIMITS
+        </div>
+
+        <h2>
+            What FORGE will not pretend to know.
+        </h2>
+
+        <div class="help-limit-grid">
+
+            <div class="help-limit-card">
+
+                <span>
+                    01
+                </span>
+
+                <strong>
+                    A missing specification
+                </strong>
+
+                <p>
+                    Missing data remains missing. It should not be
+                    silently converted into a negative conclusion.
+                </p>
+
+            </div>
+
+
+            <div class="help-limit-card">
+
+                <span>
+                    02
+                </span>
+
+                <strong>
+                    An unsupported claim
+                </strong>
+
+                <p>
+                    A generated explanation does not become evidence
+                    merely because it sounds technically convincing.
+                </p>
+
+            </div>
+
+
+            <div class="help-limit-card">
+
+                <span>
+                    03
+                </span>
+
+                <strong>
+                    A perfect decision
+                </strong>
+
+                <p>
+                    FORGE helps structure and inspect the decision.
+                    The final engineering or purchasing judgment
+                    remains with the responsible person.
+                </p>
+
+            </div>
+
+
+            <div class="help-limit-card">
+
+                <span>
+                    04
+                </span>
+
+                <strong>
+                    A source it never received
+                </strong>
+
+                <p>
+                    FORGE can only reason from information available
+                    to it. It should never imply that it checked a
+                    document or specification that was not supplied.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =============================================================
+     10 — START
+     ============================================================= -->
+
+<section class="help-final-cta">
+
+    <div class="eyebrow">
+        READY TO TRY IT
+    </div>
+
+    <h2>
+        Start with the information.
+        <span>Follow it to the decision.</span>
+    </h2>
+
+    <p>
+        Upload a source, describe the requirement and inspect
+        what FORGE can establish from the available information.
+    </p>
+
+    <div class="help-final-actions">
+
+        <a
+            href="{{ url_for('pages.workspace') }}"
+            class="button button-primary button-large"
+        >
+            Open Workspace
+            <span class="button-arrow">
+                →
+            </span>
+        </a>
+
+        <a
+            href="{{ url_for('pages.evidence') }}"
+            class="button button-secondary button-large"
+        >
+            Explore Evidence
+        </a>
+
+    </div>
+
+    <div class="help-identity">
+        Developed by Team FORGE · {{ forge_creator_year }}
+    </div>
+
+</section>
+
+{% endblock %}

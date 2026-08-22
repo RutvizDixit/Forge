@@ -1,0 +1,587 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Evidence — FORGE
+{% endblock %}
+
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+
+        <div class="eyebrow">
+            EVIDENCE
+        </div>
+
+        <h1>
+            See what supports the result.
+        </h1>
+
+        <p>
+            FORGE keeps the connection between a product decision
+            and the information behind it. Review the source,
+            the extracted value and the reasoning before relying
+            on the conclusion.
+        </p>
+
+    </div>
+
+    <div class="page-header-status">
+        <span class="status-dot"></span>
+        Evidence layer
+    </div>
+
+</div>
+
+
+<!-- =============================================================
+     EVIDENCE SUMMARY
+     ============================================================= -->
+
+<section class="evidence-summary-grid">
+
+    <div class="metric-card">
+
+        <span class="metric-label">
+            SOURCES
+        </span>
+
+        <strong
+            id="evidence-source-count"
+            class="metric-value"
+        >
+            —
+        </strong>
+
+        <span class="metric-detail">
+            sources available
+        </span>
+
+    </div>
+
+
+    <div class="metric-card">
+
+        <span class="metric-label">
+            EVIDENCE ITEMS
+        </span>
+
+        <strong
+            id="evidence-item-count"
+            class="metric-value"
+        >
+            —
+        </strong>
+
+        <span class="metric-detail">
+            linked information points
+        </span>
+
+    </div>
+
+
+    <div class="metric-card">
+
+        <span class="metric-label">
+            SUPPORTED
+        </span>
+
+        <strong
+            id="evidence-supported-count"
+            class="metric-value"
+        >
+            —
+        </strong>
+
+        <span class="metric-detail">
+            conclusions with support
+        </span>
+
+    </div>
+
+
+    <div class="metric-card">
+
+        <span class="metric-label">
+            REVIEW
+        </span>
+
+        <strong
+            id="evidence-review-count"
+            class="metric-value"
+        >
+            —
+        </strong>
+
+        <span class="metric-detail">
+            incomplete or uncertain
+        </span>
+
+    </div>
+
+</section>
+
+
+<!-- =============================================================
+     EVIDENCE FILTERS
+     ============================================================= -->
+
+<section class="panel evidence-filter-panel">
+
+    <div class="panel-header">
+
+        <div>
+
+            <div class="panel-kicker">
+                EVIDENCE INDEX
+            </div>
+
+            <h2>
+                Find the information behind a result.
+            </h2>
+
+            <p>
+                Filter by product, source or evidence status to
+                inspect a specific decision path.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="evidence-filter-grid">
+
+        <div class="filter-field">
+
+            <label for="evidence-product-filter">
+                Product
+            </label>
+
+            <select
+                id="evidence-product-filter"
+                class="select-control"
+            >
+                <option value="">
+                    All products
+                </option>
+            </select>
+
+        </div>
+
+
+        <div class="filter-field">
+
+            <label for="evidence-source-filter">
+                Source
+            </label>
+
+            <select
+                id="evidence-source-filter"
+                class="select-control"
+            >
+                <option value="">
+                    All sources
+                </option>
+            </select>
+
+        </div>
+
+
+        <div class="filter-field">
+
+            <label for="evidence-status-filter">
+                Status
+            </label>
+
+            <select
+                id="evidence-status-filter"
+                class="select-control"
+            >
+                <option value="">
+                    All evidence
+                </option>
+
+                <option value="supported">
+                    Supported
+                </option>
+
+                <option value="uncertain">
+                    Uncertain
+                </option>
+
+                <option value="review">
+                    Needs review
+                </option>
+            </select>
+
+        </div>
+
+
+        <div class="filter-field filter-action">
+
+            <button
+                id="refresh-evidence"
+                type="button"
+                class="button button-secondary"
+            >
+                Refresh Evidence
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =============================================================
+     EVIDENCE CONTENT
+     ============================================================= -->
+
+<div class="evidence-layout">
+
+    <!-- =========================================================
+         EVIDENCE LIST
+         ========================================================= -->
+
+    <section class="panel evidence-list-panel">
+
+        <div class="panel-header">
+
+            <div>
+
+                <div class="panel-kicker">
+                    AVAILABLE EVIDENCE
+                </div>
+
+                <h2>
+                    Information points
+                </h2>
+
+            </div>
+
+            <div
+                id="evidence-list-count"
+                class="count-badge"
+            >
+                0 items
+            </div>
+
+        </div>
+
+
+        <div
+            id="evidence-list"
+            class="evidence-list"
+        >
+
+            <div
+                id="evidence-empty-state"
+                class="empty-state"
+            >
+
+                <div class="empty-state-icon">
+                    ◈
+                </div>
+
+                <h3>
+                    No evidence loaded
+                </h3>
+
+                <p>
+                    Process a product source in the Workspace first.
+                    Evidence associated with the resulting records
+                    will appear here.
+                </p>
+
+                <a
+                    href="{{ url_for('pages.workspace') }}"
+                    class="button button-secondary"
+                >
+                    Open Workspace
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         SELECTED EVIDENCE
+         ========================================================= -->
+
+    <aside
+        id="evidence-detail"
+        class="panel evidence-detail-panel"
+    >
+
+        <div class="panel-header">
+
+            <div>
+
+                <div class="panel-kicker">
+                    EVIDENCE DETAIL
+                </div>
+
+                <h2>
+                    Select an evidence item
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="evidence-detail-content"
+            class="evidence-detail-content"
+        >
+
+            <div class="evidence-detail-empty">
+
+                <div class="evidence-detail-symbol">
+                    ◈
+                </div>
+
+                <p>
+                    Select an evidence item to see the source,
+                    extracted information and how it contributed
+                    to the result.
+                </p>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+</div>
+
+
+<!-- =============================================================
+     EVIDENCE CARD TEMPLATE
+     ============================================================= -->
+
+<template id="evidence-card-template">
+
+    <article
+        class="evidence-card"
+        tabindex="0"
+    >
+
+        <div class="evidence-card-header">
+
+            <div class="evidence-source-type">
+                SOURCE
+            </div>
+
+            <span class="evidence-status-badge">
+            </span>
+
+        </div>
+
+
+        <h3 class="evidence-card-title">
+        </h3>
+
+
+        <div class="evidence-card-product">
+        </div>
+
+
+        <div class="evidence-card-value">
+
+            <span class="result-section-label">
+                EXTRACTED VALUE
+            </span>
+
+            <strong>
+            </strong>
+
+        </div>
+
+
+        <div class="evidence-card-footer">
+
+            <span class="evidence-location">
+            </span>
+
+            <span class="evidence-open">
+                Inspect →
+            </span>
+
+        </div>
+
+    </article>
+
+</template>
+
+
+<!-- =============================================================
+     EVIDENCE DETAIL TEMPLATE
+     ============================================================= -->
+
+<template id="evidence-detail-template">
+
+    <div class="evidence-detail-inner">
+
+        <div class="evidence-detail-header">
+
+            <div>
+
+                <div class="panel-kicker">
+                    SOURCE INFORMATION
+                </div>
+
+                <h3 class="detail-evidence-title">
+                </h3>
+
+            </div>
+
+            <span
+                class="evidence-status-badge detail-evidence-status"
+            ></span>
+
+        </div>
+
+
+        <div class="evidence-detail-section">
+
+            <div class="result-section-label">
+                SOURCE
+            </div>
+
+            <div class="evidence-source-box">
+
+                <strong class="detail-source-name">
+                </strong>
+
+                <span class="detail-source-type">
+                </span>
+
+                <span class="detail-source-location">
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="evidence-detail-section">
+
+            <div class="result-section-label">
+                EXTRACTED INFORMATION
+            </div>
+
+            <div class="evidence-extracted-box">
+
+                <strong class="detail-extracted-value">
+                </strong>
+
+                <span class="detail-extracted-field">
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="evidence-detail-section">
+
+            <div class="result-section-label">
+                HOW IT WAS USED
+            </div>
+
+            <p class="detail-evidence-reason">
+            </p>
+
+        </div>
+
+
+        <div class="evidence-detail-section">
+
+            <div class="result-section-label">
+                TRACE
+            </div>
+
+            <button
+                type="button"
+                class="button button-secondary detail-trace-button"
+            >
+                Follow this decision
+                <span>→</span>
+            </button>
+
+        </div>
+
+    </div>
+
+</template>
+
+
+<!-- =============================================================
+     EVIDENCE PRINCIPLE
+     ============================================================= -->
+
+<section class="panel evidence-principle-panel">
+
+    <div class="evidence-principle-layout">
+
+        <div>
+
+            <div class="eyebrow">
+                IMPORTANT DISTINCTION
+            </div>
+
+            <h2>
+                Missing evidence is not negative evidence.
+            </h2>
+
+        </div>
+
+
+        <div>
+
+            <p>
+                If a catalogue or document does not provide a
+                specification, FORGE should not silently turn that
+                absence into a claim that the product fails.
+            </p>
+
+            <p>
+                Instead, the result can remain uncertain and ask
+                for additional information. This keeps the decision
+                connected to what the sources actually establish.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =============================================================
+     IDENTITY
+     ============================================================= -->
+
+<div class="evidence-protection-note">
+    FORGE evidence layer · Developed by Team FORGE
+</div>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+<script
+    src="{{ url_for('static', filename='js/evidence.js') }}"
+    defer
+></script>
+
+{% endblock %}
