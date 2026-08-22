@@ -97,6 +97,19 @@ Measure generated output against a known reference.
 
 Inspect and download the structured output produced by FORGE.
 
+## Team FORGE
+
+**Rutviz Dixit & Kushi G Gowda**
+
+*Building FORGE to turn complex product information into clear, evidence-backed intelligence for better decisions.*
+
+> Build with clarity. Verify with evidence. Decide with confidence.
+
+## Connect With Us
+
+- dattataryadixit50@gmail.com
+- kushiggowda84@gmail.com
+
 ## Local Setup
 
 Create a Python virtual environment:
@@ -148,4 +161,4 @@ FORGE is the product identity.
 
 Product and engineering attribution is retained within the application and project metadata.
 
-© 2026 Rutviz Dixit
+© 2026 Rutviz Dixit & Kushi G Gowda
