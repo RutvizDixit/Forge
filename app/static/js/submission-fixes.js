@@ -60,22 +60,16 @@
         const button = document.querySelector("[data-run-match]");
         const input = document.querySelector("[data-requirement-input]");
         if (!button || !input) return;
-
         if (!input.dataset.matchEnableFix) {
             input.dataset.matchEnableFix = "true";
-            const sync = () => {
-                if (!window.MATCH || !MATCH.loading) button.disabled = !input.value.trim();
-            };
-            input.addEventListener("input", sync);
-            sync();
+            const sync = () => { if (!window.MATCH || !MATCH.loading) button.disabled = !input.value.trim(); };
+            input.addEventListener("input", sync); sync();
         }
-
         if (!button.dataset.targetFix) {
             button.dataset.targetFix = "true";
             button.addEventListener("click", async (event) => {
                 event.preventDefault(); event.stopImmediatePropagation();
-                const requirement = (input.value || "").trim();
-                const products = activeProducts();
+                const requirement = (input.value || "").trim(), products = activeProducts();
                 if (!requirement) { toast("Add a requirement before finding matches.", "warning", "No requirement"); return; }
                 if (!products.length) { toast("Upload and select a source with product records first.", "warning", "No products"); return; }
                 if (!window.MATCH || typeof window.runRequirementMatch !== "function") { toast("The match engine is still loading. Try again.", "warning"); return; }
@@ -109,47 +103,63 @@
         },true);
     }
 
+    function renderSelectedEvidence(item) {
+        const content = document.getElementById("evidence-detail-content");
+        const heading = document.querySelector("#evidence-detail .panel-header h2");
+        if (!content || !item) return;
+        if (heading) heading.textContent = "Selected evidence";
+        const source = item.sourceName || "Unknown source";
+        const location = [item.page ? `Page ${item.page}` : "", item.section || ""].filter(Boolean).join(" · ");
+        const field = item.metadata?.field ? String(item.metadata.field).replaceAll("_", " ") : "Information point";
+        const confidence = item.confidence == null ? "Not specified" : `${Math.round(item.confidence)}%`;
+        content.innerHTML = `<div class="evidence-detail-inner"><div class="evidence-detail-header"><div><div class="panel-kicker">SELECTED EVIDENCE</div><h3>${escapeHTML(item.title || "Evidence")}</h3></div><span class="evidence-status-badge">${escapeHTML(formatEvidenceTypeSafe(item.type))}</span></div><div class="evidence-detail-section"><div class="result-section-label">SOURCE</div><div class="evidence-source-box"><strong>${escapeHTML(source)}</strong><span>${escapeHTML(location || "Source location not specified")}</span></div></div><div class="evidence-detail-section"><div class="result-section-label">EXTRACTED INFORMATION</div><div class="evidence-extracted-box"><strong>${escapeHTML(item.text || "No evidence text available.")}</strong><span>${escapeHTML(field)}</span></div></div><div class="evidence-detail-section"><div class="result-section-label">EVIDENCE STATUS</div><p>${escapeHTML(`Confidence: ${confidence}`)}</p></div><div class="evidence-detail-section"><div class="result-section-label">HOW IT WAS USED</div><p>${escapeHTML(item.requirement ? `Used in relation to: ${item.requirement}` : "This information point is available as supporting product evidence.")}</p></div></div>`;
+    }
+
+    function formatEvidenceTypeSafe(type) {
+        return String(type || "document").replaceAll("-", " ").replaceAll("_", " ").replace(/\b\w/g, c => c.toUpperCase());
+    }
+
     function setupEvidence() {
         if(!page().includes("evidence")) return;
         const list=document.getElementById("evidence-list"); if(!list) return;
         list.dataset.evidenceResults="true";
-        list.style.maxHeight = "520px";
+        list.style.maxHeight = "620px";
         list.style.overflowY = "auto";
         list.style.overflowX = "hidden";
 
-        let search=document.querySelector("[data-evidence-search]");
-        if(!search){
-            const header=list.closest(".evidence-list-panel")?.querySelector(".panel-header");
-            if(header){
-                const wrap=document.createElement("div");
-                wrap.className="evidence-search-inline";
-                wrap.innerHTML='<input id="forge-evidence-search" class="text-input" type="search" data-evidence-search placeholder="Search information points..." autocomplete="off">';
-                header.appendChild(wrap);
-                search=wrap.querySelector("[data-evidence-search]");
-            }
-        }
-        if(search && !search.dataset.searchFix){
-            search.dataset.searchFix="true";
-            search.addEventListener("input",()=>{
-                if(window.EVIDENCE){
-                    EVIDENCE.query=search.value||"";
-                    if(typeof applyEvidenceFilters==="function") applyEvidenceFilters();
-                    if(typeof renderEvidence==="function") renderEvidence();
-                    if(typeof updateEvidenceSummary==="function") updateEvidenceSummary();
-                }
-            });
-        }
+        const search=document.querySelector("[data-evidence-search]");
+        if(search){ search.remove(); }
+        const count=document.getElementById("evidence-list-count");
+        if(count){ count.remove(); }
+
         if(!list.dataset.selectionFix){
             list.dataset.selectionFix="true";
             list.addEventListener("click",event=>{
                 const action=event.target.closest("[data-open-evidence]"), card=event.target.closest(".evidence-card");
-                if(action && typeof openEvidenceDetail==="function"){event.preventDefault();event.stopPropagation();openEvidenceDetail(action.dataset.openEvidence);return;}
-                if(card && typeof openEvidenceDetail==="function"){const id=card.dataset.evidenceId;if(id) openEvidenceDetail(id);}
+                const id = action?.dataset.openEvidence || card?.dataset.evidenceId;
+                if(id && typeof getEvidenceById === "function"){
+                    event.preventDefault();
+                    event.stopPropagation();
+                    const item=getEvidenceById(id);
+                    if(item){
+                        if(window.EVIDENCE) EVIDENCE.selectedEvidence=item;
+                        renderSelectedEvidence(item);
+                    }
+                }
             });
-            list.addEventListener("keydown",event=>{if(event.key!=="Enter"&&event.key!==" ")return;const card=event.target.closest(".evidence-card");if(card&&typeof openEvidenceDetail==="function"){event.preventDefault();openEvidenceDetail(card.dataset.evidenceId);}});
+            list.addEventListener("keydown",event=>{
+                if(event.key!=="Enter"&&event.key!==" ") return;
+                const card=event.target.closest(".evidence-card");
+                if(card && typeof getEvidenceById === "function"){
+                    event.preventDefault();
+                    const item=getEvidenceById(card.dataset.evidenceId);
+                    if(item){
+                        if(window.EVIDENCE) EVIDENCE.selectedEvidence=item;
+                        renderSelectedEvidence(item);
+                    }
+                }
+            });
         }
-        const count=document.getElementById("evidence-list-count");
-        if(count && window.EVIDENCE) count.textContent=`${EVIDENCE.filteredItems?.length || EVIDENCE.items?.length || 0} items`;
     }
 
     function setupEvaluation(){
