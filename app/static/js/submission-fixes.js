@@ -57,32 +57,32 @@
 
     function setupMatch() {
         if (!page().includes("match")) return;
-        const button=document.querySelector("[data-run-match]");
-        if (!button || button.dataset.targetFix) return;
-        button.dataset.targetFix="true";
-        button.addEventListener("click", async (event) => {
-            event.preventDefault(); event.stopImmediatePropagation();
-            const input=document.querySelector("[data-requirement-input]") || document.getElementById("match-requirement");
-            const requirement=(input?.value||"").trim(), products=activeProducts();
-            if (!requirement) { toast("Add a requirement before finding matches.", "warning", "No requirement"); return; }
-            if (!products.length) { toast("Upload and select a source with product records first.", "warning", "No products"); return; }
-            if (!window.MATCH) { toast("The match engine is still loading. Try again.", "warning"); return; }
-            const endpoint=document.body.dataset.matchEndpoint || "/api/match";
-            MATCH.loading=true;
-            try {
-                const result=await forgeFetch(endpoint,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify({products,requirement,use_llm:false})});
-                const raw=result.results||result.matches||result.data?.results||result.data?.matches||[];
-                MATCH.results=Array.isArray(raw)?raw.map(r=>typeof normalizeMatchResult==="function"?normalizeMatchResult(r):r):[];
-                MATCH.requirements=[requirement];
-                if (window.FORGE_STORE) FORGE_STORE.setMatch(MATCH.results);
-                if (typeof calculateMatchSummary==="function") calculateMatchSummary();
-                if (typeof renderMatchResults==="function") renderMatchResults();
-                if (typeof renderMatchSummary==="function") renderMatchSummary();
-                if (typeof renderMatchFilters==="function") renderMatchFilters();
-                toast("Requirement matching completed.", "success");
-            } catch(error) { toast(getErrorMessage(error), "error", "Matching failed"); }
-            finally { MATCH.loading=false; if(typeof updateMatchInputState==="function") updateMatchInputState(); }
-        }, true);
+        const button = document.querySelector("[data-run-match]");
+        const input = document.querySelector("[data-requirement-input]");
+        if (!button || !input) return;
+
+        if (!input.dataset.matchEnableFix) {
+            input.dataset.matchEnableFix = "true";
+            const sync = () => {
+                if (!window.MATCH || !MATCH.loading) button.disabled = !input.value.trim();
+            };
+            input.addEventListener("input", sync);
+            sync();
+        }
+
+        if (!button.dataset.targetFix) {
+            button.dataset.targetFix = "true";
+            button.addEventListener("click", async (event) => {
+                event.preventDefault(); event.stopImmediatePropagation();
+                const requirement = (input.value || "").trim();
+                const products = activeProducts();
+                if (!requirement) { toast("Add a requirement before finding matches.", "warning", "No requirement"); return; }
+                if (!products.length) { toast("Upload and select a source with product records first.", "warning", "No products"); return; }
+                if (!window.MATCH || typeof window.runRequirementMatch !== "function") { toast("The match engine is still loading. Try again.", "warning"); return; }
+                MATCH.requirements = [requirement];
+                await window.runRequirementMatch();
+            }, true);
+        }
     }
 
     function renderCompareExtras() {
@@ -109,56 +109,47 @@
         },true);
     }
 
-    function renderSelectedEvidence(item) {
-        const detail=document.getElementById("evidence-detail-content");
-        const heading=document.querySelector("#evidence-detail .panel-header h2");
-        if(!detail || !item) return;
-        if(heading) heading.textContent="Selected evidence";
-        const confidence=item.confidence == null ? "—" : `${Math.round(item.confidence)}%`;
-        detail.innerHTML=`<div class="evidence-detail-inner"><div class="evidence-detail-header"><div><div class="panel-kicker">SOURCE INFORMATION</div><h3>${escapeHTML(item.title)}</h3></div><span class="evidence-confidence">${confidence}</span></div><div class="evidence-detail-section"><div class="result-section-label">SOURCE</div><div class="evidence-source-box"><strong>${escapeHTML(item.sourceName || "Unknown source")}</strong><span>${escapeHTML(formatEvidenceType(item.type))}</span><span>${item.page ? `Page ${escapeHTML(item.page)}` : "Location not available"}${item.section ? ` · ${escapeHTML(item.section)}` : ""}</span></div></div><div class="evidence-detail-section"><div class="result-section-label">EXTRACTED INFORMATION</div><div class="evidence-extracted-box"><strong>${escapeHTML(item.text || "No evidence text available.")}</strong><span>${escapeHTML(item.product || item.requirement || "Evidence linked to the selected source record")}</span></div></div><div class="evidence-detail-section"><div class="result-section-label">HOW IT WAS USED</div><p>${escapeHTML(item.requirement ? `Used for requirement: ${item.requirement}` : "This information point is available as source evidence for the selected product record.")}</p></div>${item.sourceUrl ? `<div class="evidence-detail-section"><a class="button button-secondary" href="${escapeHTML(item.sourceUrl)}" target="_blank" rel="noopener">Open source <span>↗</span></a></div>` : ""}</div>`;
-        if(window.EVIDENCE) EVIDENCE.selectedEvidence=item;
-    }
-
     function setupEvidence() {
         if(!page().includes("evidence")) return;
         const list=document.getElementById("evidence-list"); if(!list) return;
         list.dataset.evidenceResults="true";
+        list.style.maxHeight = "520px";
+        list.style.overflowY = "auto";
+        list.style.overflowX = "hidden";
 
-        // Search belongs inside the Information Points card, not the filter card.
-        if(!document.querySelector("[data-evidence-search]")){
-            const panelHeader=document.querySelector(".evidence-list-panel .panel-header");
-            if(panelHeader){
+        let search=document.querySelector("[data-evidence-search]");
+        if(!search){
+            const header=list.closest(".evidence-list-panel")?.querySelector(".panel-header");
+            if(header){
                 const wrap=document.createElement("div");
-                wrap.className="filter-field evidence-search-field";
-                wrap.innerHTML='<label for="forge-evidence-search">Search information points</label><input id="forge-evidence-search" class="text-input" type="search" data-evidence-search placeholder="Search product, source or evidence..." autocomplete="off">';
-                panelHeader.appendChild(wrap);
-                const search=wrap.querySelector("[data-evidence-search]");
-                search.addEventListener("input",()=>{
-                    if(typeof setEvidenceQuery==="function") setEvidenceQuery(search.value);
-                });
+                wrap.className="evidence-search-inline";
+                wrap.innerHTML='<input id="forge-evidence-search" class="text-input" type="search" data-evidence-search placeholder="Search information points..." autocomplete="off">';
+                header.appendChild(wrap);
+                search=wrap.querySelector("[data-evidence-search]");
             }
         }
-
+        if(search && !search.dataset.searchFix){
+            search.dataset.searchFix="true";
+            search.addEventListener("input",()=>{
+                if(window.EVIDENCE){
+                    EVIDENCE.query=search.value||"";
+                    if(typeof applyEvidenceFilters==="function") applyEvidenceFilters();
+                    if(typeof renderEvidence==="function") renderEvidence();
+                    if(typeof updateEvidenceSummary==="function") updateEvidenceSummary();
+                }
+            });
+        }
         if(!list.dataset.selectionFix){
             list.dataset.selectionFix="true";
             list.addEventListener("click",event=>{
                 const action=event.target.closest("[data-open-evidence]"), card=event.target.closest(".evidence-card");
-                const id=action?.dataset.openEvidence || card?.dataset.evidenceId;
-                if(!id) return;
-                event.preventDefault(); event.stopPropagation();
-                const item=typeof getEvidenceById==="function" ? getEvidenceById(id) : null;
-                if(item) renderSelectedEvidence(item);
+                if(action && typeof openEvidenceDetail==="function"){event.preventDefault();event.stopPropagation();openEvidenceDetail(action.dataset.openEvidence);return;}
+                if(card && typeof openEvidenceDetail==="function"){const id=card.dataset.evidenceId;if(id) openEvidenceDetail(id);}
             });
-            list.addEventListener("keydown",event=>{
-                if(event.key!=="Enter"&&event.key!==" ") return;
-                const card=event.target.closest(".evidence-card");
-                const id=card?.dataset.evidenceId;
-                if(!id) return;
-                event.preventDefault();
-                const item=typeof getEvidenceById==="function" ? getEvidenceById(id) : null;
-                if(item) renderSelectedEvidence(item);
-            });
+            list.addEventListener("keydown",event=>{if(event.key!=="Enter"&&event.key!==" ")return;const card=event.target.closest(".evidence-card");if(card&&typeof openEvidenceDetail==="function"){event.preventDefault();openEvidenceDetail(card.dataset.evidenceId);}});
         }
+        const count=document.getElementById("evidence-list-count");
+        if(count && window.EVIDENCE) count.textContent=`${EVIDENCE.filteredItems?.length || EVIDENCE.items?.length || 0} items`;
     }
 
     function setupEvaluation(){
