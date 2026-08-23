@@ -46,19 +46,26 @@ function patchGlobalProductStore() {
     FORGE_STORE.__sourceFilterPatched = true;
 }
 
-function syncWorkspaceSources() {
-    if (!window.WORKSPACE || !window.FORGE_STORE || typeof FORGE_STORE.setSources !== "function") return;
+function syncWorkspaceSources(force = false) {
+    if (!window.WORKSPACE || !window.FORGE_STORE || typeof FORGE_STORE.setSources !== "function") return false;
     const sources = WORKSPACE.sources || [];
+    const signature = JSON.stringify(sources.map((source) => String(source.id)));
     const valid = new Set(sources.map((source) => String(source.id)));
     const current = getSelectedSourceIds();
     if (current === null) setSelectedSourceIds(sources.map((source) => String(source.id)));
     else setSelectedSourceIds(current.filter((id) => valid.has(id)));
-    FORGE_STORE.setSources(sources);
-    patchGlobalProductStore();
+    if (force || signature !== window.__forgeSourceSignature) {
+        window.__forgeSourceSignature = signature;
+        FORGE_STORE.setSources(sources);
+        patchGlobalProductStore();
+        return true;
+    }
+    return false;
 }
 
 function refreshSourceDependentPages() {
-    syncWorkspaceSources();
+    const changed = syncWorkspaceSources();
+    if (!changed) return;
     ["refreshCatalogue", "loadCatalogueProducts", "loadMatchProducts"].forEach((name) => {
         if (typeof window[name] === "function") {
             try { window[name](); } catch (error) { console.warn(`FORGE: ${name} refresh failed`, error); }
@@ -71,6 +78,7 @@ function refreshSourceDependentPages() {
 function injectSourceSelectionControls() {
     const container = document.querySelector("[data-workspace-sources]");
     if (!container || !window.WORKSPACE) return;
+    if (!container.dataset.forgeSelectionBound) container.dataset.forgeSelectionBound = "true";
     const sources = WORKSPACE.sources || [];
     const current = getSelectedSourceIds();
     const selected = current === null ? sources.map((source) => String(source.id)) : current;
@@ -92,20 +100,22 @@ function injectSourceSelectionControls() {
             const id = String(source.id);
             setSelectedSourceIds(checkbox.checked ? [...ids, id] : ids.filter((value) => value !== id));
             refreshSourceDependentPages();
+            renderFilteredStructuredOutput();
         });
     });
 }
 
 function setupSourceLifecycleSync() {
     const container = document.querySelector("[data-workspace-sources]");
-    if (!container || !window.WORKSPACE) return;
-    let signature = "";
+    if (!container || !window.WORKSPACE || container.dataset.forgeLifecycleBound) return;
+    container.dataset.forgeLifecycleBound = "true";
+    let lastIds = "";
     const sync = () => {
         const ids = (WORKSPACE.sources || []).map((source) => String(source.id));
-        const next = JSON.stringify(ids);
-        if (next !== signature) {
-            signature = next;
-            syncWorkspaceSources();
+        const signature = JSON.stringify(ids);
+        if (signature !== lastIds) {
+            lastIds = signature;
+            syncWorkspaceSources(true);
             refreshSourceDependentPages();
         }
         injectSourceSelectionControls();
@@ -189,7 +199,8 @@ function setupWorkspaceFind() {
 }
 
 function setupCompareIntegration() {
-    if (!location.pathname.includes("compare")) return;
+    if (!location.pathname.includes("compare") || document.body.dataset.forgeCompareSetup) return;
+    document.body.dataset.forgeCompareSetup = "true";
     document.body.dataset.comparisonEndpoint = "/api/compare";
     const sync = () => {
         if (!window.COMPARISON) return;
@@ -197,23 +208,12 @@ function setupCompareIntegration() {
         if (!products.length) return;
         const normalized = products.map((product) => ({ ...product, name: product.name || product.product_name || product.title || product.manufacturer || product.vendor || product.model || product.part_number || product.id || "Unnamed product" }));
         if (typeof window.setComparisonProducts === "function") window.setComparisonProducts(normalized);
-        else if (typeof window.renderComparisonProducts === "function") {
+        else {
             COMPARISON.products = normalized.map((product) => ({ id: product.id || product.product_id || product.source_id, name: product.name, source: product.source || product.source_name || null, vendor: product.vendor || product.manufacturer || null, model: product.model || product.model_number || null, metadata: product.metadata || {}, raw: product }));
-            window.renderComparisonProducts(); window.updateComparisonSelectionState?.();
+            window.renderComparisonProducts?.(); window.updateComparisonSelectionState?.();
         }
     };
     window.setTimeout(sync, 300); window.setTimeout(sync, 1200);
-}
-
-function setupCompareSourcePayload() {
-    if (!location.pathname.includes("compare")) return;
-    const patch = () => {
-        if (!window.buildComparisonPayload || window.buildComparisonPayload.__forgeWrapped) return;
-        const original = window.buildComparisonPayload;
-        const wrapped = function () { const payload = original(); const selected = getSelectedSourceIds(); payload.source_ids = selected === null ? [] : selected; return payload; };
-        wrapped.__forgeWrapped = true; window.buildComparisonPayload = wrapped;
-    };
-    patch(); window.setTimeout(patch, 500); window.setTimeout(patch, 1500);
 }
 
 function normalizeAboutContactSection() {
@@ -222,7 +222,7 @@ function normalizeAboutContactSection() {
     if (!grid || grid.dataset.forgeNormalized) return;
     const emails = Array.from(grid.querySelectorAll("strong")).map((node) => node.textContent.trim()).filter((value) => value.includes("@"));
     if (emails.length < 2) return;
-    const container = document.createElement("div"); container.className = "connect-with-us";
+    const container = document.createElement("div"); container.className = "connect-with-us"; container.dataset.forgeNormalized = "true";
     emails.forEach((email) => { const p = document.createElement("p"); const a = document.createElement("a"); a.href = `mailto:${email}`; a.textContent = email; p.appendChild(a); container.appendChild(p); });
     grid.replaceWith(container);
 }
@@ -230,10 +230,10 @@ function normalizeAboutContactSection() {
 function initializeForgeFinalStabilization() {
     const fileInput = document.getElementById("file-input"); const chooseFiles = document.getElementById("choose-files");
     if (fileInput && chooseFiles && !chooseFiles.dataset.forgeFilePickerBound) { chooseFiles.dataset.forgeFilePickerBound = "true"; chooseFiles.addEventListener("click", (event) => { event.preventDefault(); event.stopPropagation(); if (!fileInput.disabled) fileInput.click(); }); }
-    patchGlobalProductStore(); setupWorkspaceFind(); setupStructuredOutputFilter(); setupCompareIntegration(); setupCompareSourcePayload(); normalizeAboutContactSection();
+    patchGlobalProductStore(); setupWorkspaceFind(); setupStructuredOutputFilter(); setupCompareIntegration(); normalizeAboutContactSection();
     if (window.WORKSPACE) setupSourceLifecycleSync();
 }
 
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initializeForgeFinalStabilization, { once: true }); else initializeForgeFinalStabilization();
-const forgeFinalInterval = window.setInterval(() => { initializeForgeFinalStabilization(); if (window.WORKSPACE) refreshSourceDependentPages(); }, 700);
+const forgeFinalInterval = window.setInterval(() => { initializeForgeFinalStabilization(); }, 700);
 window.setTimeout(() => window.clearInterval(forgeFinalInterval), 15000);
