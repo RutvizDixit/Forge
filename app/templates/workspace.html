@@ -40,12 +40,6 @@
             <div id="source-list" class="source-list" data-workspace-sources><div id="empty-source-state" class="empty-state"><div class="empty-state-icon">+</div><h3>No sources added yet</h3><p>Upload a catalogue, technical document, spreadsheet or source bundle to begin.</p></div></div>
         </div>
 
-        <div class="panel workspace-find-panel">
-            <div class="panel-header"><div><div class="panel-kicker">FIND IN WORKSPACE</div><h2>Find product information</h2><p>Search the structured records from the currently active source selection.</p></div></div>
-            <div class="workspace-find-row"><input id="workspace-find-input" type="search" class="requirement-input" data-forge-find-input placeholder="Find a product, manufacturer, model or specification..." autocomplete="off"><button id="workspace-find-button" type="button" class="button button-secondary" data-forge-find-button>Find</button></div>
-            <div class="workspace-find-status" data-forge-find-status></div><div class="workspace-find-results" data-forge-find-results></div>
-        </div>
-
         <div class="panel structured-output-panel" id="structured-output-panel">
             <div class="panel-header"><div><div class="panel-kicker">STRUCTURED OUTPUT</div><h2>FORGE structured data</h2><p>Preview and download the same structured records from the currently selected source(s).</p></div><div id="structured-output-count" class="count-badge"><span data-structured-output-count>0 records</span></div></div>
             <div class="structured-output-actions"><button id="preview-structured-output" type="button" class="button button-secondary" data-preview-structured-output disabled>Preview Structured Data</button><select data-structured-output-format aria-label="Structured output format" class="button button-secondary"><option value="csv" selected>CSV</option><option value="pdf">PDF</option><option value="json">JSON</option></select><button id="download-structured-output" type="button" class="button button-primary" data-download-structured-output data-export-endpoint="{{ url_for('api.export') }}" disabled>Download Structured Output <span class="button-arrow">↓</span></button></div>
@@ -54,8 +48,10 @@
 
         <div class="panel requirement-panel">
             <div class="panel-header"><div><div class="panel-kicker">STEP 02</div><h2>What are you trying to find?</h2><p>Describe the actual requirement in practical terms. FORGE will use it to evaluate and rank the available candidates.</p></div></div>
-            <textarea id="requirement-input" class="requirement-input" data-requirement-input rows="5" placeholder="Example: Find a pressure sensor suitable for an industrial process line, with a 0–10 bar range, 24 V supply and a 4–20 mA output."></textarea>
-            <div class="requirement-footer"><span class="input-hint">Be specific when the requirement matters. Missing information remains uncertain.</span><span class="input-hint">Upload sources first, then continue to matching.</span></div>
+            <textarea id="requirement-input" class="requirement-input" data-requirement-input data-forge-find-input rows="5" placeholder="Example: Find a pressure sensor suitable for an industrial process line, with a 0–10 bar range, 24 V supply and a 4–20 mA output."></textarea>
+            <div class="requirement-footer"><span class="input-hint">Be specific when the requirement matters. Missing information remains uncertain.</span><button id="workspace-find-button" type="button" class="button button-primary" data-forge-find-button>Find <span class="button-arrow">→</span></button></div>
+            <div class="workspace-find-status" data-forge-find-status aria-live="polite"></div>
+            <div class="workspace-find-results" data-forge-find-results></div>
         </div>
     </section>
 
