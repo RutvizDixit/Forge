@@ -27,119 +27,49 @@
 
     <div class="match-input-layout">
         <div class="match-input-main">
-            <textarea
-                id="match-requirement"
-                class="requirement-input"
-                data-requirement-input
-                rows="5"
-                placeholder="Example: I need a pressure transmitter for an industrial process line, 0–10 bar range, 24 V supply and 4–20 mA output."
-            ></textarea>
-
+            <textarea id="match-requirement" class="requirement-input" data-requirement-input rows="5" placeholder="Example: I need a pressure transmitter for an industrial process line, 0–10 bar range, 24 V supply and 4–20 mA output."></textarea>
             <div class="match-input-footer">
                 <span class="input-hint">More precise requirements produce more useful comparisons.</span>
-                <button id="run-match" data-run-match type="button" class="button button-primary" onclick="window.runRequirementMatch && window.runRequirementMatch()">
+                <button id="run-match" data-run-match type="button" class="button button-primary">
                     Find Matches <span class="button-arrow">→</span>
                 </button>
             </div>
         </div>
-
         <div class="match-guidance">
             <div class="guidance-icon">?</div>
             <strong>What FORGE checks</strong>
-            <ul>
-                <li>Is the required value present?</li>
-                <li>Does the available value support it?</li>
-                <li>Is the information missing or ambiguous?</li>
-                <li>Is there evidence behind the result?</li>
-            </ul>
+            <ul><li>Is the required value present?</li><li>Does the available value support it?</li><li>Is the information missing or ambiguous?</li><li>Is there evidence behind the result?</li></ul>
         </div>
     </div>
 </section>
 
 <section id="match-summary" class="match-summary-grid">
-    <div class="metric-card"><span class="metric-label">CANDIDATES</span><strong id="candidate-count" class="metric-value">—</strong><span class="metric-detail">products evaluated</span></div>
-    <div class="metric-card"><span class="metric-label">STRONG MATCHES</span><strong id="strong-match-count" class="metric-value">—</strong><span class="metric-detail">requirements supported</span></div>
-    <div class="metric-card"><span class="metric-label">NEED REVIEW</span><strong id="review-match-count" class="metric-value">—</strong><span class="metric-detail">incomplete or uncertain</span></div>
-    <div class="metric-card"><span class="metric-label">NOT SUPPORTED</span><strong id="unsupported-match-count" class="metric-value">—</strong><span class="metric-detail">requirement conflicts</span></div>
+    <div class="metric-card"><span class="metric-label">CANDIDATES</span><strong id="candidate-count" data-match-total class="metric-value">—</strong><span class="metric-detail">products evaluated</span></div>
+    <div class="metric-card"><span class="metric-label">STRONG MATCHES</span><strong id="strong-match-count" data-match-matched class="metric-value">—</strong><span class="metric-detail">requirements supported</span></div>
+    <div class="metric-card"><span class="metric-label">NEED REVIEW</span><strong id="review-match-count" data-match-partial class="metric-value">—</strong><span class="metric-detail">incomplete or uncertain</span></div>
+    <div class="metric-card"><span class="metric-label">NOT SUPPORTED</span><strong id="unsupported-match-count" data-match-unmatched class="metric-value">—</strong><span class="metric-detail">requirement conflicts</span></div>
 </section>
 
 <section class="panel match-results-panel">
     <div class="panel-header">
-        <div>
-            <div class="panel-kicker">RESULTS</div>
-            <h2>Candidate products</h2>
-            <p>Review the reasoning before selecting a product. FORGE separates supported matches from results that need more information.</p>
-        </div>
-        <div class="result-actions">
-            <button id="compare-selected" type="button" class="button button-secondary" disabled>Compare Selected</button>
-        </div>
+        <div><div class="panel-kicker">RESULTS</div><h2>Candidate products</h2><p>Review the reasoning before selecting a product. FORGE separates supported matches from results that need more information.</p></div>
+        <div class="result-actions"><button id="compare-selected" type="button" class="button button-secondary" disabled>Compare Selected</button></div>
     </div>
-
-    <div id="match-results" class="match-results">
-        <div id="match-empty-state" class="empty-state">
-            <div class="empty-state-icon">⌕</div>
-            <h3>No match has been run</h3>
-            <p>Enter a requirement above to evaluate the products currently available in the workspace.</p>
-        </div>
+    <div id="match-results" data-match-results class="match-results">
+        <div id="match-empty-state" class="empty-state"><div class="empty-state-icon">⌕</div><h3>No match has been run</h3><p>Enter a requirement above to evaluate the products currently available in the workspace.</p></div>
     </div>
 </section>
-
-<template id="match-result-template">
-    <article class="match-result-card">
-        <div class="match-result-top">
-            <label class="selection-control"><input type="checkbox" class="match-select"><span></span></label>
-            <div class="match-product-identity">
-                <div class="match-product-brand"></div>
-                <h3 class="match-product-name"></h3>
-                <div class="match-product-id"></div>
-            </div>
-            <div class="match-score"><span class="match-score-label">MATCH</span><strong class="match-score-value">—</strong></div>
-        </div>
-        <div class="match-result-status"><span class="result-status-badge"></span><span class="result-status-text"></span></div>
-        <div class="match-result-body">
-            <div class="match-reasoning"><div class="result-section-label">WHY</div><p class="match-reason"></p></div>
-            <div class="match-requirements"><div class="result-section-label">REQUIREMENT CHECK</div><div class="requirement-check-list"></div></div>
-        </div>
-        <div class="match-result-footer">
-            <div class="evidence-indicator"><span class="evidence-indicator-icon">◈</span><span class="evidence-indicator-text">Evidence status</span></div>
-            <div class="match-result-actions">
-                <button type="button" class="text-button view-evidence">View Evidence <span>→</span></button>
-                <button type="button" class="text-button view-trace">Trace Result <span>→</span></button>
-            </div>
-        </div>
-    </article>
-</template>
 
 <section class="panel interpretation-panel">
-    <div class="panel-header">
-        <div>
-            <div class="panel-kicker">READ THE RESULT</div>
-            <h2>A score is not the whole decision.</h2>
-            <p>Use the match strength as a starting point, then inspect the requirement checks and supporting evidence.</p>
-        </div>
-    </div>
-    <div class="interpretation-grid">
-        <div class="interpretation-item"><span class="interpretation-marker supported">✓</span><div><strong>Supported</strong><p>The available product information supports the requirement.</p></div></div>
-        <div class="interpretation-item"><span class="interpretation-marker uncertain">?</span><div><strong>Needs review</strong><p>The available information is incomplete, ambiguous or insufficient to conclude.</p></div></div>
-        <div class="interpretation-item"><span class="interpretation-marker unsupported">×</span><div><strong>Not supported</strong><p>Available information conflicts with the requirement.</p></div></div>
-    </div>
+    <div class="panel-header"><div><div class="panel-kicker">READ THE RESULT</div><h2>A score is not the whole decision.</h2><p>Use the match strength as a starting point, then inspect the requirement checks and supporting evidence.</p></div></div>
+    <div class="interpretation-grid"><div class="interpretation-item"><span class="interpretation-marker supported">✓</span><div><strong>Supported</strong><p>The available product information supports the requirement.</p></div></div><div class="interpretation-item"><span class="interpretation-marker uncertain">?</span><div><strong>Needs review</strong><p>The available information is incomplete, ambiguous or insufficient to conclude.</p></div></div><div class="interpretation-item"><span class="interpretation-marker unsupported">×</span><div><strong>Not supported</strong><p>Available information conflicts with the requirement.</p></div></div></div>
 </section>
 
-<div id="match-overlay" class="processing-overlay" aria-hidden="true">
-    <div class="processing-card">
-        <div class="processing-orbit"><span></span><span></span><span></span></div>
-        <div class="processing-kicker">MATCHING</div>
-        <h2>Testing the requirement.</h2>
-        <p id="match-processing-message">Reading the available product information...</p>
-        <div class="processing-progress"><span id="match-processing-progress"></span></div>
-    </div>
-</div>
+<div id="match-overlay" class="processing-overlay" aria-hidden="true"><div class="processing-card"><div class="processing-orbit"><span></span><span></span><span></span></div><div class="processing-kicker">MATCHING</div><h2>Testing the requirement.</h2><p id="match-processing-message">Reading the available product information...</p><div class="processing-progress"><span id="match-processing-progress"></span></div></div></div>
 
 {% endblock %}
 
 {% block scripts %}
-<script>
-    document.body.dataset.matchEndpoint = "{{ url_for('api.match') }}";
-</script>
+<script>document.body.dataset.matchEndpoint = "{{ url_for('api.match') }}";</script>
 <script src="{{ url_for('static', filename='js/match.js') }}" defer></script>
 {% endblock %}
