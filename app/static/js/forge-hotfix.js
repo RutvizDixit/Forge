@@ -1,6 +1,6 @@
 /* ================================================================
-   FORGE — TARGETED FRONTEND HOTFIXES
-   Keeps the existing architecture intact.
+   FORGE — FINAL SUBMISSION STABILIZATION
+   Shared source filtering, Find, structured output and Compare.
    ================================================================ */
 "use strict";
 
@@ -10,7 +10,7 @@ function getSelectedSourceIds() {
     try {
         const value = JSON.parse(sessionStorage.getItem(FORGE_SELECTED_SOURCE_KEY) || "null");
         return Array.isArray(value) ? value.map(String) : null;
-    } catch { return null; }
+    } catch (_) { return null; }
 }
 
 function setSelectedSourceIds(ids) {
@@ -19,64 +19,46 @@ function setSelectedSourceIds(ids) {
 
 function getAllWorkspaceProducts() {
     if (!window.FORGE_STORE) return [];
-    return FORGE_STORE.getProductsUnfiltered ? FORGE_STORE.getProductsUnfiltered() : FORGE_STORE.getProducts();
+    return typeof FORGE_STORE.getProductsUnfiltered === "function" ? FORGE_STORE.getProductsUnfiltered() : (typeof FORGE_STORE.getProducts === "function" ? FORGE_STORE.getProducts() : []);
 }
 
 function getActiveWorkspaceProducts() {
     const products = getAllWorkspaceProducts();
     const selected = getSelectedSourceIds();
     if (selected === null) return products;
-    if (selected.length === 0) return [];
+    if (!selected.length) return [];
     const allowed = new Set(selected);
     return products.filter((product) => allowed.has(String(product?.source_id ?? product?.source?.id ?? "")));
 }
 
 function patchGlobalProductStore() {
-    if (!window.FORGE_STORE || FORGE_STORE.__sourceFilterPatched) return;
+    if (!window.FORGE_STORE || FORGE_STORE.__sourceFilterPatched || typeof FORGE_STORE.getProducts !== "function") return;
     const originalGetProducts = FORGE_STORE.getProducts.bind(FORGE_STORE);
     FORGE_STORE.getProductsUnfiltered = originalGetProducts;
     FORGE_STORE.getProducts = function () {
         const products = originalGetProducts();
         const selected = getSelectedSourceIds();
         if (selected === null) return products;
-        if (selected.length === 0) return [];
+        if (!selected.length) return [];
         const allowed = new Set(selected);
         return products.filter((product) => allowed.has(String(product?.source_id ?? product?.source?.id ?? "")));
     };
     FORGE_STORE.__sourceFilterPatched = true;
 }
 
-function ensureInitialSourceSelection() {
-    if (!window.WORKSPACE) return;
+function syncWorkspaceSources() {
+    if (!window.WORKSPACE || !window.FORGE_STORE || typeof FORGE_STORE.setSources !== "function") return;
     const sources = WORKSPACE.sources || [];
-    if (!sources.length) return;
-    const current = getSelectedSourceIds();
     const valid = new Set(sources.map((source) => String(source.id)));
-    if (current === null) {
-        setSelectedSourceIds(sources.map((source) => String(source.id)));
-        return;
-    }
-    const cleaned = current.filter((id) => valid.has(id));
-    if (cleaned.length !== current.length) setSelectedSourceIds(cleaned);
-}
-
-function syncComparisonToSelectedSources() {
-    if (!window.COMPARISON) return;
-    const selected = getSelectedSourceIds();
-    if (selected === null) return;
-    const allowed = new Set(selected);
-    const filtered = getActiveWorkspaceProducts();
-    const ids = new Set(filtered.map((product) => String(product.id)));
-    COMPARISON.products = COMPARISON.products.filter((product) => ids.has(String(product.id)) || allowed.has(String(product.raw?.source_id ?? product.source_id ?? "")));
-    COMPARISON.products = COMPARISON.products.filter((product) => allowed.has(String(product.raw?.source_id ?? product.source_id ?? "")));
-    COMPARISON.selectedProducts = COMPARISON.selectedProducts.filter((id) => COMPARISON.products.some((product) => String(product.id) === String(id)));
-    if (typeof renderComparisonProducts === "function") renderComparisonProducts();
-    if (typeof updateComparisonSelectionState === "function") updateComparisonSelectionState();
+    const current = getSelectedSourceIds();
+    if (current === null) setSelectedSourceIds(sources.map((source) => String(source.id)));
+    else setSelectedSourceIds(current.filter((id) => valid.has(id)));
+    FORGE_STORE.setSources(sources);
+    patchGlobalProductStore();
 }
 
 function refreshSourceDependentPages() {
-    patchGlobalProductStore();
-    syncComparisonToSelectedSources();
+    syncWorkspaceSources();
     ["refreshCatalogue", "loadCatalogueProducts", "loadMatchProducts"].forEach((name) => {
         if (typeof window[name] === "function") {
             try { window[name](); } catch (error) { console.warn(`FORGE: ${name} refresh failed`, error); }
@@ -89,9 +71,11 @@ function refreshSourceDependentPages() {
 function injectSourceSelectionControls() {
     const container = document.querySelector("[data-workspace-sources]");
     if (!container || !window.WORKSPACE) return;
-    ensureInitialSourceSelection();
-    const selected = getSelectedSourceIds() || [];
-    (WORKSPACE.sources || []).forEach((source) => {
+    const sources = WORKSPACE.sources || [];
+    const current = getSelectedSourceIds();
+    const selected = current === null ? sources.map((source) => String(source.id)) : current;
+    if (current === null) setSelectedSourceIds(selected);
+    sources.forEach((source) => {
         const item = container.querySelector(`[data-source-id="${CSS.escape(String(source.id))}"]`);
         if (!item || item.querySelector("[data-forge-source-checkbox]")) return;
         const checkbox = document.createElement("input");
@@ -104,10 +88,9 @@ function injectSourceSelectionControls() {
         if (actions) actions.prepend(checkbox); else item.prepend(checkbox);
         checkbox.addEventListener("click", (event) => event.stopPropagation());
         checkbox.addEventListener("change", () => {
-            const current = getSelectedSourceIds() || [];
+            const ids = getSelectedSourceIds() || [];
             const id = String(source.id);
-            const next = checkbox.checked ? [...current, id] : current.filter((value) => value !== id);
-            setSelectedSourceIds(next);
+            setSelectedSourceIds(checkbox.checked ? [...ids, id] : ids.filter((value) => value !== id));
             refreshSourceDependentPages();
         });
     });
@@ -116,16 +99,13 @@ function injectSourceSelectionControls() {
 function setupSourceLifecycleSync() {
     const container = document.querySelector("[data-workspace-sources]");
     if (!container || !window.WORKSPACE) return;
-    let lastIds = "";
+    let signature = "";
     const sync = () => {
         const ids = (WORKSPACE.sources || []).map((source) => String(source.id));
-        const signature = JSON.stringify(ids);
-        if (signature !== lastIds) {
-            lastIds = signature;
-            ensureInitialSourceSelection();
-            patchGlobalProductStore();
-            const selected = getSelectedSourceIds() || [];
-            setSelectedSourceIds(selected.filter((id) => ids.includes(id)));
+        const next = JSON.stringify(ids);
+        if (next !== signature) {
+            signature = next;
+            syncWorkspaceSources();
             refreshSourceDependentPages();
         }
         injectSourceSelectionControls();
@@ -140,7 +120,7 @@ function getFilteredStructuredRecords() {
 
 function formatStructuredValue(value) {
     if (value === null || value === undefined || value === "") return "—";
-    if (typeof value === "object") { try { return JSON.stringify(value); } catch { return String(value); } }
+    if (typeof value === "object") { try { return JSON.stringify(value); } catch (_) { return String(value); } }
     return String(value);
 }
 
@@ -164,16 +144,15 @@ function setupStructuredOutputFilter() {
     const downloadButton = document.querySelector("[data-download-structured-output]");
     const format = document.querySelector("[data-structured-output-format]");
     const preview = document.querySelector("[data-structured-output-preview]");
-
     if (previewButton && !previewButton.dataset.forgeBound) {
         previewButton.dataset.forgeBound = "true";
         previewButton.addEventListener("click", (event) => {
             event.preventDefault(); event.stopImmediatePropagation();
             if (!getFilteredStructuredRecords().length) { showToast("Select a source with structured records first.", "warning", "No source selected"); return; }
-            renderFilteredStructuredOutput(); preview?.removeAttribute("hidden"); previewButton.textContent = "Hide Structured Preview";
+            if (preview.hasAttribute("hidden")) { renderFilteredStructuredOutput(); preview.removeAttribute("hidden"); previewButton.textContent = "Hide Structured Preview"; }
+            else { preview.setAttribute("hidden", ""); previewButton.textContent = "Preview Structured Data"; }
         }, true);
     }
-
     if (downloadButton && !downloadButton.dataset.forgeBound) {
         downloadButton.dataset.forgeBound = "true";
         downloadButton.addEventListener("click", async (event) => {
@@ -181,96 +160,80 @@ function setupStructuredOutputFilter() {
             const records = getFilteredStructuredRecords();
             if (!records.length) { showToast("Select a source with structured records first.", "warning", "No source selected"); return; }
             const exportFormat = (format?.value || "csv").toLowerCase();
-            const button = downloadButton; setButtonLoading(button, true, "Preparing...");
+            setButtonLoading(downloadButton, true, "Preparing...");
             try {
                 const response = await fetch("/api/export", { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/octet-stream" }, body: JSON.stringify({ data: records, filename: "forge_structured_output", format: exportFormat, metadata: { title: "FORGE Structured Output", subtitle: "Structured product records extracted from the selected source(s)", record_count: records.length } }) });
-                if (!response.ok) { let message = "Unable to download structured output."; try { message = (await response.json()).error || message; } catch {} throw new Error(message); }
-                const blob = await response.blob();
-                const disposition = response.headers.get("Content-Disposition") || "";
-                const match = disposition.match(/filename="?([^\"]+)"?/i);
-                const filename = match?.[1] || `forge_structured_output.${exportFormat}`;
-                const url = URL.createObjectURL(blob); const link = document.createElement("a"); link.href = url; link.download = filename; document.body.appendChild(link); link.click(); link.remove(); URL.revokeObjectURL(url);
-                showToast(`Structured output downloaded as ${exportFormat.toUpperCase()}.`, "success");
+                if (!response.ok) { let message = "Unable to download structured output."; try { message = (await response.json()).error || message; } catch (_) {} throw new Error(message); }
+                const blob = await response.blob(); const disposition = response.headers.get("Content-Disposition") || ""; const match = disposition.match(/filename="?([^\"]+)"?/i); const filename = match?.[1] || `forge_structured_output.${exportFormat}`; const url = URL.createObjectURL(blob); const link = document.createElement("a"); link.href = url; link.download = filename; document.body.appendChild(link); link.click(); link.remove(); URL.revokeObjectURL(url); showToast(`Structured output downloaded as ${exportFormat.toUpperCase()}.`, "success");
             } catch (error) { showToast(getErrorMessage(error), "error", "Download failed"); }
-            finally { setButtonLoading(button, false); }
+            finally { setButtonLoading(downloadButton, false); }
         }, true);
     }
 }
 
-function setupWorkspaceFind() {
-    const sourceContainer = document.querySelector("[data-workspace-sources]");
-    if (!sourceContainer || sourceContainer.parentNode.querySelector("[data-forge-find-panel]")) return;
-    const panel = document.createElement("div");
-    panel.dataset.forgeFindPanel = "true"; panel.className = "workspace-find-panel";
-    panel.innerHTML = `<div class="panel-kicker">FIND IN WORKSPACE</div><div class="workspace-find-row"><input type="search" data-forge-find-input placeholder="Find a product, manufacturer, model, specification..."><button type="button" class="button button-secondary" data-forge-find-button>Find</button></div><div class="workspace-find-status" data-forge-find-status></div><div class="workspace-find-results" data-forge-find-results></div>`;
-    sourceContainer.parentNode.insertBefore(panel, sourceContainer);
-    const input = panel.querySelector("[data-forge-find-input]"), button = panel.querySelector("[data-forge-find-button]"), status = panel.querySelector("[data-forge-find-status]"), results = panel.querySelector("[data-forge-find-results]");
-    const run = () => {
-        const query = input.value.trim().toLowerCase(); const records = getFilteredStructuredRecords();
-        if (!query) { status.textContent = "Enter a term to search the selected source(s)."; results.innerHTML = ""; return; }
-        if (!records.length) { status.textContent = "No selected source contains structured records."; results.innerHTML = ""; return; }
-        const matches = records.filter((record) => JSON.stringify(record).toLowerCase().includes(query)).slice(0, 50);
-        status.textContent = `${matches.length} match${matches.length === 1 ? "" : "es"}${matches.length === 50 ? " (first 50 shown)" : ""}.`;
-        results.innerHTML = matches.length ? matches.map((record) => `<div class="workspace-find-result"><pre>${escapeHTML(JSON.stringify(record, null, 2))}</pre></div>`).join("") : `<div class="empty-state compact"><p>No matching records found.</p></div>`;
-    };
-    button.addEventListener("click", run); input.addEventListener("keydown", (event) => { if (event.key === "Enter") { event.preventDefault(); run(); } });
-    window.updateFindStatus = () => { if (input.value.trim()) run(); };
+function runWorkspaceFind() {
+    const input = document.querySelector("[data-forge-find-input]"); const status = document.querySelector("[data-forge-find-status]"); const results = document.querySelector("[data-forge-find-results]");
+    if (!input || !status || !results) return;
+    const query = input.value.trim().toLowerCase(); const records = getFilteredStructuredRecords();
+    if (!query) { status.textContent = "Enter a term to search the selected source(s)."; results.innerHTML = ""; return; }
+    if (!records.length) { status.textContent = "No selected source contains structured records."; results.innerHTML = ""; return; }
+    const matches = records.filter((record) => JSON.stringify(record).toLowerCase().includes(query)).slice(0, 50);
+    status.textContent = `${matches.length} match${matches.length === 1 ? "" : "es"}${matches.length === 50 ? " (first 50 shown)" : ""}.`;
+    results.innerHTML = matches.length ? matches.map((record) => `<div class="workspace-find-result"><pre>${escapeHTML(JSON.stringify(record, null, 2))}</pre></div>`).join("") : `<div class="empty-state compact"><p>No matching records found.</p></div>`;
 }
 
-function setupCompareResultEnhancements() {
-    const button = document.querySelector("[data-run-comparison]");
-    if (!button || button.dataset.forgeResultBound) return;
-    button.dataset.forgeResultBound = "true";
-    button.addEventListener("click", () => {
-        window.setTimeout(() => {
-            const exportButton = document.querySelector("[data-export-comparison]");
-            if (exportButton && window.COMPARISON?.results?.length) exportButton.disabled = false;
-            const api = window.COMPARISON?.apiResult || {};
-            const differenceList = document.getElementById("difference-list");
-            const sharedList = document.getElementById("shared-list");
-            if (differenceList) {
-                const differences = Array.isArray(api.differences) ? api.differences : [];
-                differenceList.innerHTML = differences.length ? differences.map((item) => `<div class="difference-item"><strong>${escapeHTML(item.field || "Difference")}</strong><span>${escapeHTML((item.values || []).join(" · "))}</span></div>`).join("") : `<div class="empty-state compact"><p>No meaningful differences were returned.</p></div>`;
-            }
-            if (sharedList) {
-                const shared = Array.isArray(api.shared) ? api.shared : [];
-                sharedList.innerHTML = shared.length ? shared.map((item) => `<div class="shared-item"><strong>${escapeHTML(item.field || "Shared field")}</strong><span>${escapeHTML(item.value || "Not available")}</span></div>`).join("") : `<div class="empty-state compact"><p>No shared specifications were returned.</p></div>`;
-            }
-        }, 50);
-    });
+function setupWorkspaceFind() {
+    const input = document.querySelector("[data-forge-find-input]"); const button = document.querySelector("[data-forge-find-button]");
+    if (!input || !button || button.dataset.forgeBound) return;
+    button.dataset.forgeBound = "true"; button.addEventListener("click", runWorkspaceFind); input.addEventListener("keydown", (event) => { if (event.key === "Enter") { event.preventDefault(); runWorkspaceFind(); } }); window.updateFindStatus = () => { if (input.value.trim()) runWorkspaceFind(); };
+}
+
+function setupCompareIntegration() {
+    if (!location.pathname.includes("compare")) return;
+    document.body.dataset.comparisonEndpoint = "/api/compare";
+    const sync = () => {
+        if (!window.COMPARISON) return;
+        const products = getActiveWorkspaceProducts();
+        if (!products.length) return;
+        const normalized = products.map((product) => ({ ...product, name: product.name || product.product_name || product.title || product.manufacturer || product.vendor || product.model || product.part_number || product.id || "Unnamed product" }));
+        if (typeof window.setComparisonProducts === "function") window.setComparisonProducts(normalized);
+        else if (typeof window.renderComparisonProducts === "function") {
+            COMPARISON.products = normalized.map((product) => ({ id: product.id || product.product_id || product.source_id, name: product.name, source: product.source || product.source_name || null, vendor: product.vendor || product.manufacturer || null, model: product.model || product.model_number || null, metadata: product.metadata || {}, raw: product }));
+            window.renderComparisonProducts(); window.updateComparisonSelectionState?.();
+        }
+    };
+    window.setTimeout(sync, 300); window.setTimeout(sync, 1200);
+}
+
+function setupCompareSourcePayload() {
+    if (!location.pathname.includes("compare")) return;
+    const patch = () => {
+        if (!window.buildComparisonPayload || window.buildComparisonPayload.__forgeWrapped) return;
+        const original = window.buildComparisonPayload;
+        const wrapped = function () { const payload = original(); const selected = getSelectedSourceIds(); payload.source_ids = selected === null ? [] : selected; return payload; };
+        wrapped.__forgeWrapped = true; window.buildComparisonPayload = wrapped;
+    };
+    patch(); window.setTimeout(patch, 500); window.setTimeout(patch, 1500);
 }
 
 function normalizeAboutContactSection() {
-    if (!window.location.pathname.includes("about")) return;
-    const grids = Array.from(document.querySelectorAll(".help-format-grid"));
-    const grid = grids[grids.length - 1];
-    if (!grid) return;
+    if (!location.pathname.includes("about")) return;
+    const grid = Array.from(document.querySelectorAll(".help-format-grid")).at(-1);
+    if (!grid || grid.dataset.forgeNormalized) return;
     const emails = Array.from(grid.querySelectorAll("strong")).map((node) => node.textContent.trim()).filter((value) => value.includes("@"));
     if (emails.length < 2) return;
-    const container = document.createElement("div");
-    container.className = "connect-with-us";
+    const container = document.createElement("div"); container.className = "connect-with-us";
     emails.forEach((email) => { const p = document.createElement("p"); const a = document.createElement("a"); a.href = `mailto:${email}`; a.textContent = email; p.appendChild(a); container.appendChild(p); });
     grid.replaceWith(container);
 }
 
-function initializeForgeTargetedFixes() {
-    const fileInput = document.getElementById("file-input");
-    const chooseFiles = document.getElementById("choose-files");
-    if (fileInput && chooseFiles && !chooseFiles.dataset.forgeFilePickerBound) {
-        chooseFiles.dataset.forgeFilePickerBound = "true";
-        chooseFiles.addEventListener("click", (event) => { event.preventDefault(); event.stopPropagation(); if (!fileInput.disabled) fileInput.click(); });
-    }
-    patchGlobalProductStore(); setupWorkspaceFind(); setupStructuredOutputFilter(); setupCompareResultEnhancements(); normalizeAboutContactSection();
+function initializeForgeFinalStabilization() {
+    const fileInput = document.getElementById("file-input"); const chooseFiles = document.getElementById("choose-files");
+    if (fileInput && chooseFiles && !chooseFiles.dataset.forgeFilePickerBound) { chooseFiles.dataset.forgeFilePickerBound = "true"; chooseFiles.addEventListener("click", (event) => { event.preventDefault(); event.stopPropagation(); if (!fileInput.disabled) fileInput.click(); }); }
+    patchGlobalProductStore(); setupWorkspaceFind(); setupStructuredOutputFilter(); setupCompareIntegration(); setupCompareSourcePayload(); normalizeAboutContactSection();
     if (window.WORKSPACE) setupSourceLifecycleSync();
-
-    const waitForWorkspace = window.setInterval(() => {
-        patchGlobalProductStore();
-        if (window.WORKSPACE) { ensureInitialSourceSelection(); injectSourceSelectionControls(); syncComparisonToSelectedSources(); }
-        if (!document.querySelector("[data-forge-find-panel]")) setupWorkspaceFind();
-        setupStructuredOutputFilter(); setupCompareResultEnhancements(); normalizeAboutContactSection();
-    }, 300);
-    window.setTimeout(() => window.clearInterval(waitForWorkspace), 12000);
 }
 
-if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", () => window.setTimeout(initializeForgeTargetedFixes, 0), { once: true });
-else window.setTimeout(initializeForgeTargetedFixes, 0);
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initializeForgeFinalStabilization, { once: true }); else initializeForgeFinalStabilization();
+const forgeFinalInterval = window.setInterval(() => { initializeForgeFinalStabilization(); if (window.WORKSPACE) refreshSourceDependentPages(); }, 700);
+window.setTimeout(() => window.clearInterval(forgeFinalInterval), 15000);
