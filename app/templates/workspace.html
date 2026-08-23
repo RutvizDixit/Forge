@@ -18,25 +18,19 @@
 <div class="workspace-layout">
     <section class="workspace-main">
         <div class="panel upload-panel">
-            <div class="panel-header">
-                <div><div class="panel-kicker">STEP 01</div><h2>Add your sources</h2><p>Upload the material that contains the product information you want FORGE to work with.</p></div>
-                <div class="panel-status">SOURCE INPUT</div>
-            </div>
+            <div class="panel-header"><div><div class="panel-kicker">STEP 01</div><h2>Add your sources</h2><p>Upload the material that contains the product information you want FORGE to work with.</p></div><div class="panel-status">SOURCE INPUT</div></div>
             <div id="upload-dropzone" class="upload-dropzone" data-workspace-dropzone role="button" tabindex="0" aria-label="Choose or drop product files">
                 <input id="file-input" type="file" multiple hidden data-workspace-file-input accept=".csv,.xlsx,.xls,.pdf,.docx,.txt,.json,.xml,.zip">
-                <div class="upload-visual"><div class="upload-icon">↑</div></div>
-                <h3>Drop product files here</h3><p>or choose files from your computer</p>
+                <div class="upload-visual"><div class="upload-icon">↑</div></div><h3>Drop product files here</h3><p>or choose files from your computer</p>
                 <button id="choose-files" type="button" class="button button-secondary" data-choose-files>Choose Files</button>
                 <div class="upload-formats"><span>CSV</span><span>XLSX</span><span>XLS</span><span>PDF</span><span>DOCX</span><span>JSON</span><span>XML</span><span>TXT</span><span>ZIP</span></div>
                 <small class="upload-limit">Multiple files supported · Maximum upload size is configured by the workspace</small>
             </div>
-
             <div class="panel selected-files-panel">
                 <div class="panel-header"><div><div class="panel-kicker">SELECTED FILES</div><h3>Ready to upload</h3></div><div class="count-badge"><span data-selected-file-count>0</span> files · <span data-selected-file-size>0 B</span></div></div>
                 <div data-selected-files class="source-list"><div class="empty-state compact"><div class="empty-state-icon">+</div><h3>No files selected</h3><p>Choose a file above to add it to the upload queue.</p></div></div>
                 <div class="requirement-footer"><span class="input-hint">Selecting a file queues it. Use Upload Sources to send it to FORGE.</span><button id="start-analysis" type="button" class="button button-primary" data-upload-files>Upload Sources <span class="button-arrow">↑</span></button></div>
             </div>
-
             <div class="source-divider"><span>OR</span></div>
             <div class="url-source-row"><div class="url-source-copy"><strong>Use a web source</strong><span>Have a product page or technical source online? Add its URL instead of downloading it first.</span></div><div class="url-source-input"><input id="source-url" type="url" data-source-url placeholder="https://example.com/product" autocomplete="off"><button id="add-url-source" type="button" class="button button-secondary" data-add-url>Add Source</button></div></div>
         </div>
@@ -46,17 +40,15 @@
             <div id="source-list" class="source-list" data-workspace-sources><div id="empty-source-state" class="empty-state"><div class="empty-state-icon">+</div><h3>No sources added yet</h3><p>Upload a catalogue, technical document, spreadsheet or source bundle to begin.</p></div></div>
         </div>
 
+        <div class="panel workspace-find-panel">
+            <div class="panel-header"><div><div class="panel-kicker">FIND IN WORKSPACE</div><h2>Find product information</h2><p>Search the structured records from the currently active source selection.</p></div></div>
+            <div class="workspace-find-row"><input id="workspace-find-input" type="search" class="requirement-input" data-forge-find-input placeholder="Find a product, manufacturer, model or specification..." autocomplete="off"><button id="workspace-find-button" type="button" class="button button-secondary" data-forge-find-button>Find</button></div>
+            <div class="workspace-find-status" data-forge-find-status></div><div class="workspace-find-results" data-forge-find-results></div>
+        </div>
+
         <div class="panel structured-output-panel" id="structured-output-panel">
             <div class="panel-header"><div><div class="panel-kicker">STRUCTURED OUTPUT</div><h2>FORGE structured data</h2><p>Preview and download the same structured records from the currently selected source(s).</p></div><div id="structured-output-count" class="count-badge"><span data-structured-output-count>0 records</span></div></div>
-            <div class="structured-output-actions">
-                <button id="preview-structured-output" type="button" class="button button-secondary" data-preview-structured-output disabled>Preview Structured Data</button>
-                <select data-structured-output-format aria-label="Structured output format" class="button button-secondary">
-                    <option value="csv" selected>CSV</option>
-                    <option value="pdf">PDF</option>
-                    <option value="json">JSON</option>
-                </select>
-                <button id="download-structured-output" type="button" class="button button-primary" data-download-structured-output data-export-endpoint="{{ url_for('api.export') }}" disabled>Download Structured Output <span class="button-arrow">↓</span></button>
-            </div>
+            <div class="structured-output-actions"><button id="preview-structured-output" type="button" class="button button-secondary" data-preview-structured-output disabled>Preview Structured Data</button><select data-structured-output-format aria-label="Structured output format" class="button button-secondary"><option value="csv" selected>CSV</option><option value="pdf">PDF</option><option value="json">JSON</option></select><button id="download-structured-output" type="button" class="button button-primary" data-download-structured-output data-export-endpoint="{{ url_for('api.export') }}" disabled>Download Structured Output <span class="button-arrow">↓</span></button></div>
             <div id="structured-output-preview" class="structured-output-preview" data-structured-output-preview hidden aria-live="polite"></div>
         </div>
 
