@@ -5,7 +5,9 @@
 
 const EVALUATION = { result: null, loading: false };
 
-function evaluationValue(value) { return window.escapeHTML ? escapeHTML(value ?? "") : String(value ?? ""); }
+function evaluationValue(value) {
+    return window.escapeHTML ? escapeHTML(value ?? "") : String(value ?? "");
+}
 
 function getEvaluationInput() {
     const text = document.getElementById("evaluation-result")?.value.trim() || "";
@@ -18,20 +20,33 @@ function getEvaluationInput() {
 
 async function runEvaluation() {
     if (EVALUATION.loading) return;
+
+    const requirement = document.getElementById("evaluation-requirement")?.value.trim() || "";
     const payload = {
         result: getEvaluationInput(),
         source_data: window.FORGE_STORE ? FORGE_STORE.getProducts() : [],
-        rubric: { focus: document.getElementById("evaluation-rubric")?.value || "decision" },
+        rubric: {
+            focus: document.getElementById("evaluation-rubric")?.value || "decision",
+            requirement
+        },
         use_llm: Boolean(document.getElementById("evaluation-use-llm")?.checked)
     };
+
     EVALUATION.loading = true;
     try {
-        const result = await forgeFetch("/api/evaluate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+        const result = await forgeFetch("/api/evaluate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
         EVALUATION.result = result;
         renderEvaluation(result);
         showToast("Evaluation completed.", "success");
-    } catch (error) { showToast(getErrorMessage(error), "error", "Evaluation failed"); }
-    finally { EVALUATION.loading = false; }
+    } catch (error) {
+        showToast(getErrorMessage(error), "error", "Evaluation failed");
+    } finally {
+        EVALUATION.loading = false;
+    }
 }
 
 function setMetric(id, value) { const el = document.getElementById(id); if (el) el.textContent = value === undefined || value === null ? "—" : `${Math.round(Number(value))}`; }
