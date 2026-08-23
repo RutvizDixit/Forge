@@ -1,0 +1,16 @@
+/* Targeted evaluation review layout fixes only. */
+.evaluation-issues { display: flex; flex-direction: column; gap: 12px; }
+.evaluation-issue { box-sizing: border-box; width: 100%; padding: 14px 16px; border: 1px solid var(--border-color, #dfe3e8); border-radius: 10px; overflow-wrap: anywhere; word-break: break-word; }
+.evaluation-issue strong, .evaluation-issue p { margin: 0; }
+.evaluation-issue p { margin-top: 6px; line-height: 1.5; }
+.evaluation-verdict { box-sizing: border-box; width: 100%; overflow-wrap: anywhere; word-break: break-word; }
+.evaluation-verdict p, .evaluation-verdict h3 { overflow-wrap: anywhere; word-break: break-word; }
+.evaluation-dimension { min-width: 0; }
+.evaluation-dimension p { line-height: 1.45; overflow-wrap: anywhere; }
+.comparison-insight-item { display: flex; flex-direction: column; gap: 5px; padding: 13px 15px; border: 1px solid var(--border-color, #dfe3e8); border-radius: 10px; margin-bottom: 10px; overflow-wrap: anywhere; }
+.comparison-insight-item strong { font-size: .92rem; }
+.comparison-insight-item span { line-height: 1.45; overflow-wrap: anywhere; }
+.comparison-insight-item small { color: var(--text-muted, #69727d); }
+.evidence-search-field { grid-column: span 2; }
+.evidence-search-field input { width: 100%; box-sizing: border-box; }
+@media (max-width: 850px) { .evidence-search-field { grid-column: 1 / -1; } }
