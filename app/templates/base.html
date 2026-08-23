@@ -8,6 +8,7 @@
     <meta name="author" content="Team FORGE">
     <title>{% block title %}{{ forge_app_name }} — Industrial Product Intelligence{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/submission-fixes.css') }}">
     {% block head %}{% endblock %}
 </head>
 <body data-active-page="{{ active_page|default('') }}">
